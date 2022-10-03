@@ -1,6 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
+import goods from "./modules/goods";
+import sale from "./modules/sale";
 
 Vue.use(Vuex);
 
@@ -8,8 +10,11 @@ export default new Vuex.Store({
   state: {
     server: "http://127.0.0.1:8000",
     user_name: localStorage.getItem("user_name"),
+    snack_message: {},
+    snack_bar: false,
+    loading_button_login:false
   },
-  getters: {},
+
   mutations: {
     LOGIN_USER(state, data) {
       state.user_name = data.result[0].user_name;
@@ -21,10 +26,19 @@ export default new Vuex.Store({
       localStorage.removeItem("name");
       location.reload();
     },
+    SNACK_MESSAGE(state, snack_message) {
+      state.snack_message = snack_message;
+      state.snack_bar = true;
+    },
+    TIME_OUT(state) {
+      state.snack_bar = false;
+      state.snack_message = null;
+    },
   },
   actions: {
     login({ commit, state }, data) {
       return new Promise((resolve) => {
+        state.loading_button_login = true;
         axios({
           url: `${state.server}` + "/api/login",
           data: data,
@@ -45,14 +59,30 @@ export default new Vuex.Store({
             localStorage.setItem("name", data.result[0].name);
             resolve(response);
           })
-          .catch((err) => {
-            console.log(err.response);
+          .catch(() => {
+            state.loading_button_login = false;
+            let snack_message = {};
+            snack_message["color"] = "red darken-1";
+            snack_message["icon"] = "alert";
+            snack_message["text"] = "ادخلت اسم مستخدم او كلمة مرور غير صحيحه";
+            commit("SNACK_MESSAGE", snack_message);
+            setTimeout(() => {
+              commit("TIME_OUT", snack_message);
+            }, 4000);
           });
       });
     },
     logout({ commit }) {
-      commit('CLEAR_USER')
-    }
+      commit("CLEAR_USER");
+    },
   },
-  modules: {},
+  getters: {
+    snack_bar(state) {
+      return !!state.snack_bar;
+    },
+  },
+  modules: {
+    goods,
+    sale
+  },
 });

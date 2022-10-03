@@ -95,7 +95,7 @@
             title: "بيع",
             icon: "fa-comments-dollar",
             color: "color: #1B5E20",
-            link: "buy",
+            link: "sale",
           },
 
           {
@@ -115,6 +115,12 @@
             title: "اعدادات الحساب",
             icon: "fa-gear",
             color: "color: #3E2723",
+            link: "buy",
+          },
+          {
+            title: "راجع بيع",
+            icon: "fa-filter-circle-dollar",
+            color: "color: #B71C1C",
             link: "buy",
           },
         ],

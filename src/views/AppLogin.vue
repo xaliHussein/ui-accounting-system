@@ -3,26 +3,22 @@
     <v-row>
       <v-col cols="12" sm="12" md="6" lg="6" class="mx-auto">
         <v-form ref="form">
-          <v-card
-            width="500"
-            class="mx-auto pb-3 card"
-            :class="{ margin: !$vuetify.breakpoint.smAndDown }"
-          >
+          <v-card width="500" class="mx-auto pb-3 card margin">
             <v-card-title class="justify-center">
               <h2>تسجيل الدخول</h2>
             </v-card-title>
             <v-card-text>
-              <v-text-field
-                v-model="userName"
-                color="black"
-                type="Username"
-                label="اسم المستخدم"
-                prepend-icon="mdi-account-circle"
+              <Input
+                @update-value="userName = $event"
+                :value="userName"
                 :rules="userNameRules"
+                label="اسم المستخدم"
+                icon="mdi-account-circle"
               />
+
               <v-text-field
                 v-model="password"
-                color="black"
+                class="font-weight-black"
                 :type="showPassword ? 'text' : 'password'"
                 label="كلمة المرور"
                 prepend-icon="mdi-lock"
@@ -50,9 +46,9 @@
                 </template>
               </v-btn>
             </v-card-actions>
-            <v-card-actions>
+            <!-- <v-card-actions>
               <h4 class="link-h4" @click="redirect">ليس لديه حساب</h4>
-            </v-card-actions>
+            </v-card-actions> -->
           </v-card>
         </v-form>
       </v-col>
@@ -61,7 +57,9 @@
 </template>
 
 <script>
+  import Input from "../components/Inputs/AppInput.vue";
   export default {
+    components: { Input },
     data() {
       return {
         userName: "",

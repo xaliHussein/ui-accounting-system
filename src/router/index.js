@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import AppLogin from "../views/AppLogin.vue";
 import Home from "../views/AppHome.vue";
 import Buy from "../views/AppBuy.vue";
+import Sale from "../views/AppSale.vue";
 
 Vue.use(VueRouter);
 
@@ -23,6 +24,12 @@ const routes = [
     path: "/buy",
     name: "buy",
     component: Buy,
+    beforeEnter: loggedIn,
+  },
+  {
+    path: "/sale",
+    name: "sale",
+    component: Sale,
     beforeEnter: loggedIn,
   },
 ];

@@ -5,6 +5,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import Axios from 'axios'
 import Print from 'vue-print-nb'
+import moment from 'moment'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -15,7 +16,7 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 library.add(far,fas,fab)
 Vue.use(Print);
 Vue.component('font-awesome', FontAwesomeIcon)
-
+Vue.prototype.moment = moment
 Vue.config.productionTip = false
 Vue.prototype.$http = Axios
 
