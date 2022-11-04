@@ -6,8 +6,7 @@
     :label="label"
     :prepend-icon="icon"
     @input="$emit('update-value', $event)"
-    :rules="rules"
-  />
+    :rules="rules" />
 </template>
 <script>
   export default {

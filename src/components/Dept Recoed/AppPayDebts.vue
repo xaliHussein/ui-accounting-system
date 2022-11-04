@@ -4,33 +4,19 @@
     <v-form ref="form">
       <v-card width="750px" class="mx-auto card">
         <v-toolbar class="d-flex justify-center" color="indigo darken-4">
-          <h2 style="color: white">معلومات الزبون</h2>
+          <h2 style="color: white">تسديد الديون</h2>
         </v-toolbar>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12" sm="6" md="6" lg="6">
                 <Input
-                  @update-value="client_name = $event"
-                  :value="client_name"
-                  type="string"
-                  icon="mdi-account-box"
-                  label="اسم الزبون" />
-              </v-col>
-              <v-col cols="12" sm="6" md="6" lg="6">
-                <Input
-                  @update-value="client_phone = $event"
-                  :value="client_phone"
+                  @update-value="payDebt = $event"
+                  :value="payDebt"
+                  icon="mdi-currency-usd"
                   type="number"
-                  icon="mdi-cellphone"
-                  label="رقم هاتف الزبون" />
-              </v-col>
-              <v-col cols="12" sm="6" md="6" lg="6">
-                <v-combobox
-                  v-model="select"
-                  :items="items"
-                  class="font-weight-black"
-                  label="نوع الدفع"></v-combobox>
+                  label="مبلغ التسديد"
+                  :rules="Rules" />
               </v-col>
               <v-col cols="12" sm="6" md="6" lg="6">
                 <v-checkbox
@@ -42,30 +28,30 @@
             </v-row>
           </v-container>
         </v-card-text>
+        <v-card-text>
+          <h3 class="mr-5">متبقي : {{ change_total_debt }}</h3>
+        </v-card-text>
         <v-card-actions>
           <v-btn
-            class="px-10"
+            @click="pay_debt"
+            :loading="loading_button"
             color="indigo darken-4"
-            @click="sale_goods"
-            :loading="pop_loading">
-            <h4 style="color: white">شراء</h4>
+            elevation="4"
+            class="px-10">
+            <h4 style="color: white">تسديد</h4>
             <template v-slot:loader>
               <span class="custom-loader">
                 <v-icon color="white">mdi-cached</v-icon>
               </span>
             </template>
           </v-btn>
-          <v-btn
-            class="px-10"
-            outlined
-            color="indigo darken-4"
-            v-on:click="$emit('popMonetary')">
-            <h4>الغاء</h4>
+          <v-btn outlined color="indigo darken-4" class="px-10" @click="close">
+            <h4>اغلاق</h4>
           </v-btn>
         </v-card-actions>
       </v-card>
-      <!-- end -->
     </v-form>
+    <!-- end -->
   </v-dialog>
 </template>
 <script>
@@ -80,43 +66,63 @@
     },
     data() {
       return {
-        client_name: "",
-        client_phone: "",
         checkbox: true,
-        select: ["نقد"],
-        items: ["نقد", "آجل"],
+        payDebt: "",
         Rules: [(value) => !!value || "هذا الحقل مطلوب"],
       };
     },
+    mounted() {
+      this.total_debt_record = this.total_debt;
+    },
     computed: {
-      pop_loading() {
-        return this.$store.state.sale.pop_loading;
+      change_total_debt: {
+        set(val) {
+          this.$store.state.debtRecord.change_total_debt = val;
+        },
+        get() {
+          return this.$store.state.debtRecord.change_total_debt;
+        },
+      },
+      debt_record_id() {
+        return this.$store.state.debtRecord.debt_record_id;
+      },
+      loading_button() {
+        return this.$store.state.debtRecord.table_loading;
       },
     },
     methods: {
-      sale_goods() {
+      pay_debt() {
         if (this.$refs.form.validate()) {
           let data = {};
-          data["client_name"] = this.client_name;
-          data["client_phone"] = this.client_phone;
-          data["goods_id"] = this.$store.state.sale.cart_goods;
-          if (this.select == "نقد") {
-            data["debt_record"] = 0;
-          } else {
-            data["debt_record"] = 1;
-          }
-          this.$store.dispatch("sale/add_sale", data);
-          if (this.checkbox == true) {
-            this.printMe(this.client_name);
-          } else {
-            this.$store.state.sale.cart_goods = [];
-            this.$store.state.sale.total_price = 0;
-          }
-          this.$emit("popMonetary");
+          data["id"] = this.debt_record_id.id;
+          data["payment_amount"] = this.payDebt;
+          this.$store.dispatch("debtRecord/pay_debt_records", data).then(() => {
+            if (this.checkbox == true) {
+              this.printMe(
+                this.debt_record_id,
+                this.change_total_debt,
+                this.payDebt
+              );
+            }
+            this.$emit("PayDebts");
+            this.$refs.form.reset();
+          });
         }
       },
-
-      printMe(client_name) {
+      close() {
+        this.$emit("PayDebts");
+        this.$refs.form.reset();
+      },
+      change(val) {
+        if (val >= this.debt_record_id.total_debt) {
+          this.change_total_debt = 0;
+        } else if (val < this.debt_record_id.total_debt) {
+          this.change_total_debt = this.debt_record_id.total_debt - val;
+        } else if (val == null || val == undefined) {
+          this.change_total_debt = this.debt_record_id.total_debt;
+        }
+      },
+      printMe(debt_record, remainder_debt, payDebt) {
         const pdf = new jsPDF("p", "pt", "A4");
 
         var font =
@@ -129,13 +135,23 @@
           "normal"
         );
         pdf.setFont("Amiri-Regular-normal");
-        let data = this.$store.state.sale.cart_goods;
         var body = [
-          ["اسم المتجر", "اسم الزبون", "مجموع", "تاريخ الشراء"],
+          [
+            "اسم المتجر",
+            "اسم الزبون",
+            "رقم الفاتوره",
+            "سعر الكلي",
+            "مبلغ التسديد",
+            "الدين المتبقي",
+            "تاريخ الدفع",
+          ],
           [
             this.$store.state.store,
-            client_name,
-            this.$store.state.sale.total_price,
+            debt_record.client_name,
+            debt_record.code_invoices,
+            debt_record.total_price,
+            payDebt,
+            remainder_debt,
             moment().format("YYYY-MM-DD"),
           ],
         ];
@@ -143,25 +159,15 @@
           body: body,
           bodyStyles: { halign: "center" },
           margin: { top: 25 },
-          styles: { font: "Amiri-Regular-normal" },
-        });
-        autoTable(pdf, {
-          body: data,
-          columns: [
-            { header: "المنتج", dataKey: "name" },
-            { header: "اسم الشركه", dataKey: "company" },
-            { header: "الكميه", dataKey: "quantity" },
-            { header: "السعر", dataKey: "sale_price" },
-          ],
-          headStyles: { halign: "center" },
-          bodyStyles: { halign: "center" },
-          margin: { top: 40 },
           theme: "grid",
           styles: { font: "Amiri-Regular-normal" },
         });
         pdf.save("table.pdf");
-        this.$store.state.sale.cart_goods = [];
-        this.$store.state.sale.total_price = 0;
+      },
+    },
+    watch: {
+      payDebt() {
+        this.change(this.payDebt);
       },
     },
   };

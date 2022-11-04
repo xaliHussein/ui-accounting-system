@@ -5,8 +5,7 @@
       :items="items"
       :loading="loading"
       hide-default-footer
-      loading-text="جاري التحميل يرجى الأنتظار"
-    >
+      loading-text="جاري التحميل يرجى الأنتظار">
       <template v-slot:top>
         <v-toolbar flat>
           <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -21,8 +20,7 @@
             label="بحث"
             single-line
             hide-details
-            class="mr-5 font-weight-black"
-          ></v-text-field>
+            class="mr-5 font-weight-black"></v-text-field>
         </v-toolbar>
       </template>
       <th v-for="header in headers" :key="header.text">
@@ -40,32 +38,56 @@
             {{ item.company }}
           </td>
           <td class="text-center font-weight-black">{{ item.quantity }}</td>
-          <td class="text-center font-weight-black">{{ item.sale_price }}</td>
-          <td class="text-center font-weight-black">{{ item.buy_price }}</td>
+          <td class="text-center font-weight-black">
+            {{ item.buy_price | formatNumber }}
+          </td>
+          <td class="text-center font-weight-black">
+            {{ item.sale_price | formatNumber }}
+          </td>
           <td
             class="text-center font-weight-black"
-            v-if="item.product_code == null"
-          >
+            v-if="item.product_code == null">
             <h5 style="color: red">لايوجد</h5>
           </td>
           <td class="text-center font-weight-black" v-else>
             {{ item.product_code }}
           </td>
+          <td class="text-center font-weight-black">
+            {{ moment(item.created_at).format("YYYY-MM-DD") }}
+          </td>
 
           <td class="text-center font-weight-black">
-            <v-tooltip top>
+            <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
+                  v-if="button1"
                   fab
                   x-small
                   color="grey darken-3 "
                   v-bind="attrs"
                   v-on="on"
-                >
-                  <v-icon color="white">mdi-power</v-icon>
+                  @click="popEdit(item)">
+                  <v-icon color="white">{{ button1 }}</v-icon>
                 </v-btn>
               </template>
-              <span>ايقاف</span>
+              <span>تعديل</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-if="button2"
+                  fab
+                  class="mr-1"
+                  x-small
+                  style="background-color: #b71c1c"
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="popDelete(item)">
+                  <v-icon color="white">{{ button2 }}</v-icon>
+                </v-btn>
+              </template>
+              <span>حذف</span>
             </v-tooltip>
           </td>
         </tr>
@@ -78,8 +100,7 @@
             :value="pagination.itemsPerPage"
             :items="item"
             @input="$emit('update-item', $event)"
-            label="Items per page"
-          ></v-select>
+            label="Items per page"></v-select>
         </v-col>
         <v-col align-self="center" cols="5" sm="5" md="3" lg="3">
           <v-pagination
@@ -87,8 +108,7 @@
             :length="pageCount"
             @input="changePagination"
             circle
-            color="blue darken-4"
-          ></v-pagination>
+            color="indigo darken-4"></v-pagination>
         </v-col>
       </v-row>
     </div>
@@ -113,6 +133,14 @@
         type: Object,
         required: true,
       },
+      button1: {
+        type: String,
+        required: false,
+      },
+      button2: {
+        type: String,
+        required: false,
+      },
       loading: Boolean,
       title: String,
       pageCount: Number,
@@ -125,6 +153,12 @@
       updateQuery(event) {
         this.$emit("update-query", event);
         this.$emit("query-change");
+      },
+      popEdit(item) {
+        this.$emit(this.button1, item);
+      },
+      popDelete(item) {
+        this.$emit(this.button2, item);
       },
     },
   };

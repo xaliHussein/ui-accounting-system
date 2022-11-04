@@ -5,14 +5,16 @@
       <AppSnackBar v-if="snackBar" :snack_message="snack_message" />
       <router-view />
     </v-main>
+    <AppFooter />
   </v-app>
 </template>
 
 <script>
   import AppHeader from "./components/AppHeader.vue";
   import AppSnackBar from "./components/AppSnackBar.vue";
+  import AppFooter from "./components/AppFooter.vue";
   export default {
-    components: { AppHeader, AppSnackBar },
+    components: { AppHeader, AppSnackBar, AppFooter },
     name: "App",
 
     data: () => ({

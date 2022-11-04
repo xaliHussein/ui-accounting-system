@@ -8,13 +8,13 @@
               :headers="headers"
               :items="cart_goods"
               hide-default-footer
-              loading-text="جاري التحميل يرجى الأنتظار"
-            >
+              loading-text="جاري التحميل يرجى الأنتظار">
               <template v-slot:top>
                 <v-toolbar flat>
                   <v-toolbar-title>جدول بيع بضائع</v-toolbar-title>
                   <v-divider class="mx-4" inset vertical></v-divider>
                   <v-text-field
+                    ref="barcode"
                     v-model="search_barcode"
                     @input="barcode"
                     append-icon="mdi-barcode-scan"
@@ -23,8 +23,7 @@
                     single-line
                     hide-details
                     clearable
-                    class="mr-5 font-weight-black"
-                  ></v-text-field>
+                    class="mr-5 font-weight-black"></v-text-field>
 
                   <v-autocomplete
                     ref="goodDropdown"
@@ -39,14 +38,12 @@
                     clearable
                     :search-input.sync="goodQuery"
                     :value="goodQuery"
-                    @input="add_goods"
-                  >
+                    @input="add_goods">
                     <template v-slot:append-item>
                       <div
                         v-intersect="userInteract"
                         v-if="!($store.state.sale.goods_state == 'finished')"
-                        class="text-lg-center"
-                      ></div>
+                        class="text-lg-center"></div>
                     </template>
                   </v-autocomplete>
                 </v-toolbar>
@@ -61,15 +58,14 @@
                   <td class="text-center font-weight-bold">{{ item.name }}</td>
                   <td
                     class="text-center font-weight-bold"
-                    v-if="item.company == null"
-                  >
+                    v-if="item.company == null">
                     <h5 style="color: red">لايوجد</h5>
                   </td>
                   <td class="text-center font-weight-bold" v-else>
                     {{ item.company }}
                   </td>
                   <td class="text-center font-weight-bold">
-                    {{ item.sale_price }}
+                    {{ item.sale_price | formatNumber }}
                   </td>
 
                   <td class="text-center font-weight-bold">
@@ -117,15 +113,12 @@
             </v-card-text>
             <v-card-actions>
               <v-btn color="indigo darken-4 px-10" @click="pop">
-                <h4 style="color: white">نقد</h4>
-              </v-btn>
-              <v-btn outlined color="indigo darken-4">
-                <h3 class="px-8">آجل</h3>
+                <h4 style="color: white">تاكيد</h4>
               </v-btn>
             </v-card-actions>
           </v-col>
         </v-card>
-        <!-- pop -->
+        <!-- pops -->
         <AppPopMonetary :value="dialog" v-on:popMonetary="dialog = !dialog" />
         <!-- end -->
       </v-col>
@@ -246,7 +239,9 @@
       barcode() {
         clearTimeout(this._timerId);
         this._timerId = setTimeout(() => {
-          this.$store.dispatch("sale/get_goods_barcode");
+          this.$store.dispatch("sale/get_goods_barcode").then(() => {
+            this.$refs.barcode.reset();
+          });
         }, 500);
       },
       // حذف عنصر من جدول
@@ -321,6 +316,7 @@
               ProductData["company"] = product.company;
               ProductData["sale_price"] = product.sale_price;
               ProductData["availableQuantity"] = product.quantity - 1;
+
               this.$store.state.sale.total_price += product.sale_price;
               this.$store.state.sale.cart_goods.push(ProductData);
             } else {

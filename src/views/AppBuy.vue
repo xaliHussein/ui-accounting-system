@@ -4,7 +4,7 @@
       <!-- Card goods -->
       <v-col cols="12" sm="12" md="12" lg="12" class="pb-8">
         <v-card class="mx-auto mt-3 card" width="95%">
-          <v-form ref="form" v-model="valid">
+          <v-form ref="form">
             <v-card-text>
               <v-row>
                 <v-col cols="12" sm="4" md="4" lg="4">
@@ -14,8 +14,7 @@
                     icon="mdi-semantic-web"
                     type="text"
                     label="اسم المنتج"
-                    :rules="nameProducerRules"
-                  />
+                    :rules="nameProducerRules" />
                 </v-col>
                 <v-col cols="12" sm="4" md="4" lg="4">
                   <Input
@@ -24,8 +23,7 @@
                     icon="mdi-database-edit"
                     type="number"
                     label="كمية"
-                    :rules="Rules"
-                  />
+                    :rules="Rules" />
                 </v-col>
                 <v-col cols="12" sm="4" md="4" lg="4">
                   <Input
@@ -34,8 +32,7 @@
                     type="number"
                     icon="mdi-currency-usd"
                     label="سعر الشراء"
-                    :rules="Rules"
-                  />
+                    :rules="Rules" />
                 </v-col>
                 <v-col cols="12" sm="4" md="4" lg="4">
                   <Input
@@ -44,8 +41,7 @@
                     type="number"
                     label="سعر البيع"
                     icon="mdi-currency-usd"
-                    :rules="Rules"
-                  />
+                    :rules="Rules" />
                 </v-col>
                 <v-col cols="12" sm="4" md="4" lg="4">
                   <Input
@@ -53,9 +49,7 @@
                     :value="nameCompany"
                     icon="mdi-domain"
                     type="text"
-                    label="اسم الشركه"
-                    :rules="Rules"
-                  />
+                    label="اسم الشركه" />
                 </v-col>
                 <v-col cols="12" sm="4" md="4" lg="4">
                   <Input
@@ -64,16 +58,14 @@
                     type="number"
                     label="رقم المنتج"
                     icon="mdi-barcode-scan"
-                    :rules="Rules"
-                  />
+                    :rules="Rules" />
                 </v-col>
                 <v-col cols="12" sm="12" md="12" lg="12" class="text-center">
                   <v-btn
-                    :loading="loadingButton"
+                    :loading="loading_button"
                     color="#16213E"
                     @click="create_goods"
-                    class="px-10"
-                  >
+                    class="px-10">
                     <h3 style="color: white">انشاء منتج</h3>
                     <template v-slot:loader>
                       <span class="custom-loader">
@@ -102,27 +94,40 @@
               :search="goods_Query"
               :pageCount="pageCount"
               :pagination="goods_params"
+              button1="mdi-pencil"
+              button2="mdi-delete"
+              @mdi-pencil="edit_goods"
+              @mdi-delete="delete_goods"
               @update-item="pagination.itemsPerPage = $event"
               @update-pag="pagination.page = $event"
               @update-query="update_goods_Query"
-              @query-change="query_change"
-            />
+              @query-change="query_change" />
           </v-col>
         </v-card>
       </v-col>
       <!-- End table -->
+      <!-- pops -->
+      <AppPopEdit :value="popEdit" v-on:popEdit="popEdit = !popEdit" />
+      <AppPopDelete
+        :value="popDelete"
+        v-on:popDelete="popDelete = !popDelete" />
+      <!-- end -->
     </v-row>
   </v-container>
 </template>
 <script>
   import Input from "../components/Inputs/AppInput.vue";
-  import Tables from "../components/Tables/AppTable.vue";
+  import Tables from "../components/Buy/AppTable.vue";
+  import AppPopEdit from "../components/Buy/AppPopEdit.vue";
+  import AppPopDelete from "../components/Buy/AppPopDelete.vue";
   export default {
-    components: { Input, Tables },
+    components: { Input, Tables, AppPopEdit, AppPopDelete },
     name: "AppBuy",
     data() {
       return {
         valid: false,
+        popEdit: false,
+        popDelete: false,
         nameProducer: "",
         nameCompany: "",
         quantity: "",
@@ -175,6 +180,18 @@
             align: "center",
             class: "indigo darken-4 white--text title",
           },
+          {
+            text: "تاريخ شراء",
+            value: "data",
+            align: "center",
+            class: "indigo darken-4 white--text title",
+          },
+          {
+            text: "اجرائات",
+            value: "procedures",
+            align: "center",
+            class: "indigo darken-4 white--text title",
+          },
         ],
         item: [1, 2, 5, 10, 25, 50, 100],
         pagination: { sortBy: [], sortDesc: [], page: 1, itemsPerPage: 10 },
@@ -184,8 +201,8 @@
       this.$store.dispatch("goods/get_goods");
     },
     computed: {
-      loadingButton() {
-        return this.$store.state.goods.loadingButton;
+      loading_button() {
+        return this.$store.state.goods.loading_button;
       },
       table_loading() {
         return this.$store.state.goods.table_loading;
@@ -245,6 +262,14 @@
       update_goods_Query(event) {
         this.goods_Query = event;
       },
+      edit_goods(item) {
+        Object.assign(this.$store.state.goods.edit_goods, item);
+        this.popEdit = !this.popEdit;
+      },
+      delete_goods(item) {
+        this.$store.state.goods.delete_goods = item.id;
+        this.popDelete = !this.popDelete;
+      },
     },
     watch: {
       pagination: {
@@ -259,42 +284,5 @@
 <style scoped>
   .card {
     border-radius: 25px;
-  }
-
-  .custom-loader {
-    animation: loader 1s infinite;
-    display: flex;
-  }
-  @-moz-keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @-webkit-keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @-o-keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
   }
 </style>

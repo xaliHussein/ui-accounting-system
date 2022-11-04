@@ -3,7 +3,8 @@ const goods = {
   namespaced: true,
   state: {
     goods: [],
-    slected_Object: {},
+    edit_goods: {},
+    delete_goods: '',
     goodsQuery: "",
     pageCount: 1,
     params: {
@@ -13,11 +14,21 @@ const goods = {
       itemsPerPage: 10,
     },
     table_loading: false,
-    loadingButton: false,
+    loading_button: false,
+    loading_button_edit: false,
   },
   mutations: {
     ADD_GOODS(state, goods) {
       state.goods.push(goods);
+    },
+    EDIT_GOODS(state, goods) {
+      let index = state.goods.findIndex((element) => element.id === goods.id);
+      state.goods.splice(index, 1);
+      state.goods.unshift(goods);
+    },
+    DELETE_GOODS(state, id) {
+      let index = state.goods.findIndex((element) => element.id == id);
+      state.goods.splice(index, 1);
     },
     GET_GOODS(state, goods) {
       state.goods.splice(0, state.goods.length);
@@ -29,7 +40,7 @@ const goods = {
   actions: {
     add_goods({ commit, state, rootState }, data) {
       state.table_loading = true;
-      state.loadingButton = true;
+      state.loading_button = true;
       return new Promise((resolve) => {
         axios({
           url: `${rootState.server}` + "/api/add_goods",
@@ -50,7 +61,7 @@ const goods = {
               commit("TIME_OUT", snack_message, { root: true });
             }, 4000);
             state.table_loading = false;
-            state.loadingButton = false;
+            state.loading_button = false;
             resolve(response);
           })
 
@@ -64,7 +75,7 @@ const goods = {
               commit("TIME_OUT", snack_message, { root: true });
             }, 4000);
             state.table_loading = false;
-            state.loadingButton = false;
+            state.loading_button = false;
           });
       });
     },
@@ -109,6 +120,84 @@ const goods = {
               commit("TIME_OUT", snack_message, { root: true });
             }, 4000);
             state.table_loading = false;
+          });
+      });
+    },
+    edit_goods({ commit, state, rootState }, data) {
+      state.table_loading = true;
+      state.loading_button_edit = true;
+      return new Promise((resolve) => {
+        axios({
+          url: `${rootState.server}` + "/api/edit_goods",
+          data: data,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "put",
+        })
+          .then((response) => {
+            commit("EDIT_GOODS", response.data.result[0]);
+            let snack_message = {};
+            snack_message["color"] = "green darken-1";
+            snack_message["icon"] = "checkbox-marked-circle";
+            snack_message["text"] = "تم تعديل المنتج بنجاح";
+            commit("SNACK_MESSAGE", snack_message, { root: true });
+            setTimeout(() => {
+              commit("TIME_OUT", snack_message, { root: true });
+            }, 4000);
+            state.table_loading = false;
+            state.loading_button_edit = false;
+            resolve(response);
+          })
+
+          .catch(() => {
+            let snack_message = {};
+            snack_message["color"] = "red darken-1";
+            snack_message["icon"] = "alert";
+            snack_message["text"] = "حدث مشكلة في الاتصال بالخادم";
+            commit("SNACK_MESSAGE", snack_message, { root: true });
+            setTimeout(() => {
+              commit("TIME_OUT", snack_message, { root: true });
+            }, 4000);
+            state.table_loading = false;
+            state.loading_button_edit = false;
+          });
+      });
+    },
+    delete_goods({ commit, state, rootState }, data) {
+      return new Promise((resolve) => {
+        axios({
+          url: `${rootState.server}` + "/api/delete_goods",
+          data: data,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "delete",
+        })
+          .then((response) => {
+            commit("DELETE_GOODS", data);
+            let snack_message = {};
+            snack_message["color"] = "green darken-1";
+            snack_message["icon"] = "checkbox-marked-circle";
+            snack_message["text"] = "تم حذف المنتج بنجاح";
+            commit("SNACK_MESSAGE", snack_message, { root: true });
+            setTimeout(() => {
+              commit("TIME_OUT", snack_message, { root: true });
+            }, 4000);
+            resolve(response);
+          })
+
+          .catch(() => {
+            let snack_message = {};
+            snack_message["color"] = "red darken-1";
+            snack_message["icon"] = "alert";
+            snack_message["text"] = "حدث مشكلة في الاتصال بالخادم";
+            commit("SNACK_MESSAGE", snack_message, { root: true });
+            setTimeout(() => {
+              commit("TIME_OUT", snack_message, { root: true });
+            }, 4000);
+            state.table_loading = false;
+            state.loading_button_edit = false;
           });
       });
     },

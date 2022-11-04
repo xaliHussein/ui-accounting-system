@@ -1,41 +1,5 @@
 <template>
   <v-container fluid>
-    <!-- <v-row class="mt-1">
-      <v-col
-        cols="12"
-        sm="6"
-        md="4"
-        lg="3"
-        v-for="(st, index) in statistics"
-        :key="index"
-      >
-        <v-card max-width="100%" class="mt-4 mx-auto direction">
-          <v-card-title class="d-flex justify-space-between align-start">
-            <v-sheet
-              :color="st.color"
-              elevation="6"
-              max-width="90px"
-              class="v-sheet-card d-flex justify-center"
-            >
-              <font-awesome
-                style="color: white"
-                :icon="['fas', st.icon]"
-                size="xl"
-              />
-            </v-sheet>
-            <div>
-              <p class="body-1 grey--text font-weight-black">{{ st.title }}</p>
-              <h3 class="font-weight-light mt-n3 text-right">55</h3>
-            </div>
-          </v-card-title>
-          <v-card-text class="pb-1">
-            <v-divider class="my-1"></v-divider>
-            <span class="caption grey--text font-weight-light"> text </span>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row> -->
-
     <v-row>
       <v-col
         cols="12"
@@ -44,8 +8,7 @@
         lg="4"
         v-for="(opation, index) in opations"
         :key="index"
-        class="d-flex justify-center mt-3"
-      >
+        class="d-flex justify-center mt-3">
         <v-card width="360" class="card" :to="{ name: opation.link }">
           <v-card-title :style="opation.color" class="d-flex justify-center"
             ><font-awesome :icon="['fas', opation.icon]" size="4x"
@@ -55,41 +18,57 @@
           </v-card-title>
         </v-card>
       </v-col>
+      <v-col
+        cols="12"
+        sm="6"
+        md="4"
+        lg="4"
+        class="d-flex justify-center mt-3"
+        v-if="admin == 'admin'">
+        <v-card width="360" class="card" to="/accounts">
+          <v-card-title style="color: #c51162" class="d-flex justify-center"
+            ><font-awesome :icon="['fas', 'fa-users']" size="4x"
+          /></v-card-title>
+          <v-card-title class="d-flex justify-center">
+            <h2 class="grey--text">الحسابات</h2>
+          </v-card-title>
+        </v-card>
+      </v-col>
+      <AppDisableAccount v-if="activation == 1" />
     </v-row>
   </v-container>
 </template>
 <script>
+  import AppDisableAccount from "../components/AppDisableAccount.vue";
   export default {
+    components: {
+      AppDisableAccount,
+    },
     data() {
       return {
-        statistics: [
-          {
-            title: "المبيعات",
-            icon: "fa-comments-dollar",
-            color: "green darken-4",
+        data: {
+          labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          series: [
+            [5, 2, 4, 2, 9],
+            [2, 9, 1, 3, 5],
+          ],
+        },
+        options: {
+          fullWidth: true,
+          width: 600,
+          height: 300,
+          lineSmooth: false,
+          chartPadding: {
+            right: 40,
           },
-          {
-            title: "الديون",
-            icon: "fa-circle-dollar-to-slot",
-            color: "orange darken-4",
-          },
-          {
-            title: "المبيعات",
-            icon: "fa-comments-dollar",
-            color: "green darken-4",
-          },
-          {
-            title: "المبيعات",
-            icon: "fa-comments-dollar",
-            color: "green darken-4",
-          },
-        ],
+        },
+        filter: "",
         opations: [
           {
             title: "سجل الديون",
             icon: "fa-circle-dollar-to-slot",
             color: "color: #E65100",
-            link: "buy",
+            link: "debt_record",
           },
           {
             title: "بيع",
@@ -104,37 +83,42 @@
             color: "color: #4a148c",
             link: "buy",
           },
-          {
-            title: "الحسابات",
-            icon: "fa-users",
-            color: "color: #C51162",
-            link: "buy",
-          },
 
           {
             title: "اعدادات الحساب",
             icon: "fa-gear",
             color: "color: #3E2723",
-            link: "buy",
+            link: "settings",
           },
           {
-            title: "راجع بيع",
+            title: "سجلات بيع",
             icon: "fa-filter-circle-dollar",
             color: "color: #B71C1C",
-            link: "buy",
+            link: "sales_record",
+          },
+          {
+            title: "احصائيات",
+            icon: "fa-chart-pie",
+            color: "color: #FFD600",
+            link: "statistics",
           },
         ],
       };
     },
+    mounted() {
+      this.$store.dispatch("chack_user");
+    },
+    computed: {
+      admin() {
+        return this.$store.state.user_name;
+      },
+      activation() {
+        return this.$store.state.activation;
+      },
+    },
   };
 </script>
 <style scoped>
-  .v-sheet-card {
-    margin-top: -35px;
-    border-radius: 3px;
-    position: relative;
-    padding: 30px;
-  }
   .card {
     cursor: pointer;
     box-shadow: 0 5px 15px rgb(0 0 0 / 7%) !important;
@@ -145,5 +129,8 @@
     transition: all ease 0.2s;
     transform: scale(1.1);
     box-shadow: 0 5px 15px rgb(0 0 0 / 20%) !important;
+  }
+  .cards {
+    border-radius: 25px;
   }
 </style>

@@ -13,8 +13,7 @@
                 :value="userName"
                 :rules="userNameRules"
                 label="اسم المستخدم"
-                icon="mdi-account-circle"
-              />
+                icon="mdi-account-circle" />
 
               <v-text-field
                 v-model="password"
@@ -24,11 +23,7 @@
                 prepend-icon="mdi-lock"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="showPassword = !showPassword"
-                :rules="PasswordsRules"
-              />
-              <h4 :to="{ name: 'register' }" class="link-h4">
-                هل نسيت كلمة مرور ؟
-              </h4>
+                :rules="PasswordsRules" />
             </v-card-text>
             <v-card-actions>
               <v-btn
@@ -36,8 +31,7 @@
                 :loading="loadingButton"
                 color="#16213E"
                 block
-                elevation="4"
-              >
+                elevation="4">
                 <h4 style="color: white; font-size: 17px">تسجيل</h4>
                 <template v-slot:loader>
                   <span class="custom-loader">
@@ -46,9 +40,6 @@
                 </template>
               </v-btn>
             </v-card-actions>
-            <!-- <v-card-actions>
-              <h4 class="link-h4" @click="redirect">ليس لديه حساب</h4>
-            </v-card-actions> -->
           </v-card>
         </v-form>
       </v-col>
