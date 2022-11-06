@@ -32,7 +32,14 @@
                     type="number"
                     icon="mdi-currency-usd"
                     label="سعر الشراء"
+                    hint="يرجى ادخال جميع الاسعار بالدينار العراقي"
                     :rules="Rules" />
+                </v-col>
+                <v-col cols="12" sm="4" md="4" lg="4">
+                  <v-text-field
+                    label="Your product or service"
+                    value="Grocery delivery"
+                    hint="For example, flowers or used cars"></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="4" md="4" lg="4">
                   <Input
@@ -41,6 +48,7 @@
                     type="number"
                     label="سعر البيع"
                     icon="mdi-currency-usd"
+                    hint="يرجى ادخال جميع الاسعار بالدينار العراقي"
                     :rules="Rules" />
                 </v-col>
                 <v-col cols="12" sm="4" md="4" lg="4">

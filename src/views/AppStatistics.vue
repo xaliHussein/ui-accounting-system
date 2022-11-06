@@ -87,7 +87,7 @@
                   <v-divider class="my-1"></v-divider>
 
                   <v-icon size="20">mdi-clock-outline</v-icon>
-                  <span class="body-1 font-weight-black"> اخر 7 ايام </span>
+                  <span class="body-1 font-weight-black"> {{ st.time }}</span>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -155,16 +155,19 @@
             title: "المبيعات",
             icon: "fa-comments-dollar",
             color: "pink",
+            time: "اخر 7 ايام ",
           },
           {
             title: "الديون",
             icon: "fa-circle-dollar-to-slot",
             color: "purple",
+            time: "اخر 7 ايام ",
           },
           {
             title: "راس المال",
             icon: "fa-bag-shopping",
             color: "purple darken-4",
+            time: "الحالي",
           },
         ],
       };

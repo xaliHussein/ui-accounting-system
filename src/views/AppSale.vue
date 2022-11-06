@@ -109,7 +109,7 @@
               </template>
             </v-data-table>
             <v-card-text>
-              <h3>مجموع : {{ total_price }}</h3>
+              <h3>مجموع : {{ total_price | formatNumber }}</h3>
             </v-card-text>
             <v-card-actions>
               <v-btn color="indigo darken-4 px-10" @click="pop">

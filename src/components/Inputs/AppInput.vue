@@ -6,6 +6,8 @@
     :label="label"
     :prepend-icon="icon"
     @input="$emit('update-value', $event)"
+    :hint="hint"
+    persistent-hint
     :rules="rules" />
 </template>
 <script>
@@ -17,6 +19,10 @@
       value: String,
       rules: {
         type: Array,
+        required: false,
+      },
+      hint: {
+        type: String,
         required: false,
       },
     },

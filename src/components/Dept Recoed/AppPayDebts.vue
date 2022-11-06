@@ -29,7 +29,7 @@
           </v-container>
         </v-card-text>
         <v-card-text>
-          <h3 class="mr-5">متبقي : {{ change_total_debt }}</h3>
+          <h3 class="mr-5">متبقي : {{ change_total_debt | formatNumber }}</h3>
         </v-card-text>
         <v-card-actions>
           <v-btn
