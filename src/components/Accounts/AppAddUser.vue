@@ -55,7 +55,7 @@
                   @click:append="showPassword = !showPassword"
                   :rules="PasswordsRules" />
               </v-col>
-              <v-col cols="12" sm="12" md="6" lg="6">
+              <v-col cols="12" sm="6" md="6" lg="6">
                 <v-text-field
                   class="font-weight-black"
                   v-model="confirmPassword"
@@ -144,6 +144,8 @@
           data["password"] = this.password;
           this.$store.dispatch("add_users", data).then(() => {
             this.$emit("popUser");
+            this.$store.dispatch("get_users");
+            this.$refs.form.reset();
           });
         }
       },

@@ -135,7 +135,7 @@
           [
             this.$store.state.store,
             client_name,
-            this.$store.state.sale.total_price,
+            "د.ع " + this.$store.state.sale.total_price,
             moment().format("YYYY-MM-DD"),
           ],
         ];

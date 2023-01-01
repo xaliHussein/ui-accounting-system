@@ -69,7 +69,6 @@ const settings = {
                method: 'put',
             })
                .then((response) => {
-                console.log(response.data.result[0])
                   commit('EDIT_USERNAME', response.data.result[0])
                   let snack_message = {}
                   snack_message['color'] = 'green darken-1'

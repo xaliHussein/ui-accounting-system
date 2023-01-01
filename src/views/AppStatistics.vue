@@ -13,6 +13,7 @@
                     max-width="100%"
                     class="v-sheet-card d-flex justify-center">
                     <LineChartGenerator
+                      v-if="get_sales_stats"
                       :chart-options="chartOptions"
                       :chart-data="get_sales_stats"
                       chart-id="line-chart"
@@ -37,6 +38,7 @@
                     max-width="100%"
                     class="v-sheet-card d-flex justify-center">
                     <Bar
+                      v-if="get_debt_stats"
                       :chart-options="chartOptions"
                       :chart-data="get_debt_stats"
                       chart-id="bar-chart"
@@ -60,34 +62,34 @@
               md="3"
               lg="3"
               class="mx-auto mb-8"
-              v-for="(st, index) in statistics"
+              v-for="(store_stats, index) in get_store_stats"
               :key="index">
               <v-card max-width="100%" class="mt-4 mx-auto direction card2">
                 <v-card-title class="d-flex justify-space-between align-start">
                   <v-sheet
-                    :color="st.color"
+                    :color="statistics[index].color"
                     elevation="6"
                     max-width="90px"
                     class="v-sheet-card d-flex justify-center">
                     <font-awesome
                       style="color: white"
-                      :icon="['fas', st.icon]"
+                      :icon="['fas', statistics[index].icon]"
                       size="xl" />
                   </v-sheet>
                   <div>
                     <p class="h6 font-weight-black">
-                      {{ st.title }}
+                      {{ statistics[index].title }}
                     </p>
                     <h3 class="font-weight-light mt-n3 text-center">
-                      {{ get_store_stats[index].total | formatNumber }}
+                      {{ store_stats.total | formatNumber }}
                     </h3>
                   </div>
                 </v-card-title>
                 <v-card-text class="pb-1">
                   <v-divider class="my-1"></v-divider>
-
-                  <v-icon size="20">mdi-clock-outline</v-icon>
-                  <span class="body-1 font-weight-black"> {{ st.time }}</span>
+                  <span class="body-1 font-weight-black">{{
+                    statistics[index].time
+                  }}</span>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -155,13 +157,13 @@
             title: "المبيعات",
             icon: "fa-comments-dollar",
             color: "pink",
-            time: "اخر 7 ايام ",
+            time: "اخر 7 ايام",
           },
           {
             title: "الديون",
             icon: "fa-circle-dollar-to-slot",
             color: "purple",
-            time: "اخر 7 ايام ",
+            time: "اخر 7 ايام",
           },
           {
             title: "راس المال",
@@ -232,6 +234,9 @@
             return 400;
         }
       },
+    },
+    methods: {
+      filterChange() {},
     },
   };
 </script>

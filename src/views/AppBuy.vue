@@ -36,12 +36,6 @@
                     :rules="Rules" />
                 </v-col>
                 <v-col cols="12" sm="4" md="4" lg="4">
-                  <v-text-field
-                    label="Your product or service"
-                    value="Grocery delivery"
-                    hint="For example, flowers or used cars"></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="4" md="4" lg="4">
                   <Input
                     @update-value="Sale = $event"
                     :value="Sale"
@@ -93,23 +87,136 @@
       <v-col cols="12">
         <v-card class="mx-auto card" width="95%">
           <v-col cols="12">
-            <Tables
+            <v-data-table
               :headers="headers"
-              :loading="table_loading"
-              :title="title"
               :items="goods"
-              :item="item"
-              :search="goods_Query"
-              :pageCount="pageCount"
-              :pagination="goods_params"
-              button1="mdi-pencil"
-              button2="mdi-delete"
-              @mdi-pencil="edit_goods"
-              @mdi-delete="delete_goods"
-              @update-item="pagination.itemsPerPage = $event"
-              @update-pag="pagination.page = $event"
-              @update-query="update_goods_Query"
-              @query-change="query_change" />
+              :options.sync="pagination"
+              :page.sync="pagination.page"
+              :items-per-page="pagination.itemsPerPage"
+              :loading="table_loading || false"
+              hide-default-footer
+              loading-text="جاري التحميل يرجى الأنتظار">
+              <template v-slot:top>
+                <v-toolbar flat>
+                  <v-toolbar-title>{{ title }}</v-toolbar-title>
+                  <v-divider class="mx-4" inset vertical></v-divider>
+                  <v-spacer></v-spacer>
+                  <v-text-field
+                    v-model="goods_Query"
+                    @input="query_change"
+                    append-icon="mdi-magnify"
+                    clearable
+                    color="black"
+                    label="بحث"
+                    single-line
+                    hide-details
+                    class="mr-5 font-weight-black"></v-text-field>
+                </v-toolbar>
+              </template>
+              <th
+                v-for="header in headers"
+                :key="header.text"
+                :class="[
+                  'column sortable',
+                  pagination.descending ? 'desc' : 'asc',
+                  header.value === pagination.sortBy ? 'active' : '',
+                ]"
+                @click="changeSort(header.value)">
+                <v-icon small>mdi-arrow_upward</v-icon>
+                {{ header.text }}
+              </th>
+
+              <template v-slot:item="{ item }">
+                <tr>
+                  <td class="text-center font-weight-black">{{ item.name }}</td>
+                  <td
+                    class="text-center font-weight-black"
+                    v-if="item.company == null">
+                    <h5 style="color: red">لايوجد</h5>
+                  </td>
+                  <td class="text-center font-weight-black" v-else>
+                    {{ item.company }}
+                  </td>
+                  <td class="text-center font-weight-black">
+                    {{ item.quantity }}
+                  </td>
+                  <td class="text-center font-weight-black">
+                    {{ item.buy_price | formatNumber }}
+                  </td>
+                  <td class="text-center font-weight-black">
+                    {{ item.sale_price | formatNumber }}
+                  </td>
+                  <td
+                    class="text-center font-weight-black"
+                    v-if="item.product_code == null">
+                    <h5 style="color: red">لايوجد</h5>
+                  </td>
+                  <td class="text-center font-weight-black" v-else>
+                    {{ item.product_code }}
+                  </td>
+                  <td class="text-center font-weight-black">
+                    {{ moment(item.created_at).format("YYYY-MM-DD") }}
+                  </td>
+
+                  <td class="text-center font-weight-black">
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          fab
+                          x-small
+                          color="grey darken-3 "
+                          v-bind="attrs"
+                          v-on="on"
+                          @click="edit_goods(item)">
+                          <v-icon color="white">mdi-pencil</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>تعديل</span>
+                    </v-tooltip>
+
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          fab
+                          class="mr-1"
+                          x-small
+                          style="background-color: #b71c1c"
+                          v-bind="attrs"
+                          v-on="on"
+                          @click="delete_goods(item)">
+                          <v-icon color="white">mdi-delete</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>حذف</span>
+                    </v-tooltip>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+            <div class="text-center font-weight-black pt-2 mt-3">
+              <v-row>
+                <v-col
+                  align-self="center"
+                  cols="5"
+                  sm="5"
+                  md="2"
+                  lg="2"
+                  class="mr-4">
+                  <v-select
+                    v-model="pagination.itemsPerPage"
+                    :items="itemss"
+                    label="Items per page"></v-select>
+                </v-col>
+                <v-col align-self="center" cols="5" sm="5" md="3" lg="3">
+                  <v-pagination
+                    v-model="pagination.page"
+                    :length="pageCount"
+                    circle
+                    color="indigo darken-4">
+                  </v-pagination>
+                </v-col>
+              </v-row>
+            </div>
           </v-col>
         </v-card>
       </v-col>
@@ -125,11 +232,10 @@
 </template>
 <script>
   import Input from "../components/Inputs/AppInput.vue";
-  import Tables from "../components/Buy/AppTable.vue";
   import AppPopEdit from "../components/Buy/AppPopEdit.vue";
   import AppPopDelete from "../components/Buy/AppPopDelete.vue";
   export default {
-    components: { Input, Tables, AppPopEdit, AppPopDelete },
+    components: { Input, AppPopEdit, AppPopDelete },
     name: "AppBuy",
     data() {
       return {
@@ -201,13 +307,11 @@
             class: "indigo darken-4 white--text title",
           },
         ],
-        item: [1, 2, 5, 10, 25, 50, 100],
-        pagination: { sortBy: [], sortDesc: [], page: 1, itemsPerPage: 10 },
+        itemss: [1, 2, 5, 10, 25, 50, 100],
+        pagination: {},
       };
     },
-    mounted() {
-      this.$store.dispatch("goods/get_goods");
-    },
+
     computed: {
       loading_button() {
         return this.$store.state.goods.loading_button;
@@ -231,10 +335,10 @@
       },
       goods_Query: {
         set(val) {
-          this.$store.state.goods.goodsQuery = val;
+          this.$store.state.goods.goods_Query = val;
         },
         get() {
-          return this.$store.state.goods.goodsQuery;
+          return this.$store.state.goods.goods_Query;
         },
       },
     },
@@ -248,7 +352,9 @@
           data["sale_price"] = this.Sale;
           data["company"] = this.nameCompany;
           data["product_code"] = this.productCode;
-          this.$store.dispatch("goods/add_goods", data);
+          this.$store.dispatch("goods/add_goods", data).then(() => {
+            this.$store.dispatch("goods/get_goods");
+          });
           this.$refs.form.reset();
         }
       },
@@ -267,9 +373,25 @@
           this.get_goods();
         }, 500);
       },
-      update_goods_Query(event) {
-        this.goods_Query = event;
+      changeSort(column) {
+        let pagination = this.goods_params;
+        if (pagination.sortBy[0] === column) {
+          if (pagination.sortDesc[0] === true) {
+            pagination.sortBy = [];
+            pagination.sortDesc = [];
+          } else {
+            pagination.sortDesc = [true];
+          }
+        } else {
+          pagination.sortBy = [column];
+          pagination.sortDesc = [false];
+        }
+        this.$store.dispatch("goods/get_goods");
+        this.goods_params.page = 1;
+        this.goods_params.sortBy = pagination.sortBy;
+        this.goods_params.sortDesc = pagination.sortDesc;
       },
+
       edit_goods(item) {
         Object.assign(this.$store.state.goods.edit_goods, item);
         this.popEdit = !this.popEdit;

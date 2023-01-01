@@ -150,7 +150,18 @@
       },
       display_product(item) {
         this.$store.state.sale.get_sale_id = item.good_sales;
-        this.PopDisplay = !this.PopDisplay;
+        if (item.good_sales.length > 0) {
+          this.PopDisplay = !this.PopDisplay;
+        } else {
+          let snack_message = {};
+          snack_message["color"] = "orange darken-1";
+          snack_message["icon"] = "alert";
+          snack_message["text"] = "تم ارجاع بضائع هذه فاتوره";
+          this.$store.commit("SNACK_MESSAGE", snack_message);
+          setTimeout(() => {
+            this.$store.commit("TIME_OUT", snack_message);
+          }, 4000);
+        }
       },
     },
     watch: {

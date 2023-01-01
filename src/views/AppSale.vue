@@ -29,6 +29,7 @@
                     ref="goodDropdown"
                     :items="goods"
                     v-model="id"
+                    color="black"
                     hide-details
                     item-text="name"
                     item-value="id"
@@ -122,6 +123,92 @@
         <AppPopMonetary :value="dialog" v-on:popMonetary="dialog = !dialog" />
         <!-- end -->
       </v-col>
+      <!-- table  -->
+      <v-col cols="12" sm="12" md="12" lg="12" class="pb-8">
+        <v-card class="mx-auto mt-3 card" width="95%">
+          <v-col cols="12">
+            <v-data-table
+              :headers="headers2"
+              :items="goods2"
+              :options.sync="pagination"
+              :page.sync="pagination.page"
+              :items-per-page="pagination.itemsPerPage"
+              :loading="sale_good_loading || false"
+              hide-default-footer
+              loading-text="جاري التحميل يرجى الأنتظار">
+              <template v-slot:top>
+                <v-toolbar flat>
+                  <v-toolbar-title>جدول بضائع</v-toolbar-title>
+
+                  <v-divider class="mx-4" inset vertical></v-divider>
+                  <v-spacer></v-spacer>
+                  <v-text-field
+                    v-model="sale_good_query"
+                    @input="queryChange"
+                    append-icon="mdi-magnify"
+                    label="بحث"
+                    single-line
+                    color="black"
+                    clearable
+                    hide-details
+                    class="mr-5 font-weight-black"></v-text-field>
+                </v-toolbar>
+              </template>
+              <th v-for="header in headers" :key="header.text">
+                <v-icon small>mdi-arrow_upward</v-icon>
+                {{ header.text }}
+              </th>
+
+              <template v-slot:item="{ item }">
+                <tr class="click" @click="add_goods(item.id)">
+                  <td class="text-center font-weight-black">{{ item.name }}</td>
+                  <td class="text-center font-weight-black">
+                    {{ item.company }}
+                  </td>
+                  <td class="text-center font-weight-black">
+                    {{ item.sale_price | formatNumber }}
+                  </td>
+                  <td class="text-center font-weight-black">
+                    {{ item.quantity }}
+                  </td>
+
+                  <td class="text-center font-weight-black">
+                    {{ item.product_code }}
+                  </td>
+                  <td class="text-center font-weight-black">
+                    {{ moment(item.created_at).format("YYYY-MM-DD") }}
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+            <!-- end Table -->
+            <div class="text-center font-weight-black pt-2 mt-3">
+              <v-row>
+                <v-col
+                  align-self="center"
+                  cols="5"
+                  sm="5"
+                  md="2"
+                  lg="2"
+                  class="mr-4">
+                  <v-select
+                    v-model="pagination.itemsPerPage"
+                    :items="items"
+                    label="Items per page"></v-select>
+                </v-col>
+                <v-col align-self="center" cols="5" sm="5" md="3" lg="3">
+                  <v-pagination
+                    v-model="pagination.page"
+                    :length="pageCount"
+                    circle
+                    color="indigo darken-4">
+                  </v-pagination>
+                </v-col>
+              </v-row>
+            </div>
+          </v-col>
+        </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -132,6 +219,8 @@
     data() {
       return {
         id: "",
+        items: [5, 10, 25, 50, 100],
+        pagination: {},
         dialog: false,
         menu_props: {
           closeOnClick: false,
@@ -176,6 +265,46 @@
             class: "indigo darken-4 white--text title",
           },
         ],
+        headers2: [
+          {
+            text: "اسم المنتج",
+            align: "center",
+            filterable: true,
+            value: "name",
+            class: "indigo darken-4 white--text title ",
+          },
+          {
+            text: "اسم الشركة",
+            value: "company",
+            align: "center",
+            class: "indigo darken-4 white--text title",
+          },
+          {
+            text: "سعر",
+            value: "buy_price",
+            align: "center",
+            class: "indigo darken-4 white--text title",
+          },
+          {
+            text: "الكميه",
+            value: "buy_price",
+            align: "center",
+            class: "indigo darken-4 white--text title",
+          },
+
+          {
+            text: "رقم المنتج",
+            value: "product_code",
+            align: "center",
+            class: "indigo darken-4 white--text title",
+          },
+          {
+            text: "تاريخ شراء",
+            value: "data",
+            align: "center",
+            class: "indigo darken-4 white--text title",
+          },
+        ],
       };
     },
     mounted() {
@@ -207,6 +336,33 @@
       total_price() {
         return this.$store.state.sale.total_price;
       },
+      // computed الخاص ب جدول البضائع لاختيار منها لبيع
+      sale_good_query: {
+        set(val) {
+          this.$store.state.sale.sale_good_query = val;
+        },
+        get() {
+          return this.$store.state.sale.sale_good_query;
+        },
+      },
+      goods2() {
+        return this.$store.state.sale.sale_goods;
+      },
+      pageCount() {
+        return this.$store.state.sale.saleGoodsPageCount;
+      },
+      goods_param: {
+        set(val) {
+          this.$store.state.sale.goods_param = val;
+        },
+        get() {
+          return this.$store.state.sale.goods_param;
+        },
+      },
+      sale_good_loading() {
+        return this.$store.state.sale.sale_good_loading;
+      },
+      // end
     },
     methods: {
       pop() {
@@ -319,6 +475,9 @@
 
               this.$store.state.sale.total_price += product.sale_price;
               this.$store.state.sale.cart_goods.push(ProductData);
+              setTimeout(() => {
+                this.$refs.goodDropdown.reset();
+              }, 500);
             } else {
               // عرض اشعار بان البضاعه انتهت كمياتها
               let snack_message = {};
@@ -330,8 +489,52 @@
                 this.$store.commit("TIME_OUT", snack_message);
               }, 4000);
             }
+          } else {
+            this.$refs.goodDropdown.reset();
           }
         }
+      },
+      // methode الخاص ب جدول بضائع لاختيار منها لبيع
+      get_sale_goods() {
+        let pagination = this.pagination;
+        let par = {
+          ...pagination,
+        };
+        this.goods_param = par;
+        this.$store.dispatch("sale/get_sale_goods");
+      },
+      queryChange() {
+        clearTimeout(this._timerId);
+        this._timerId = setTimeout(() => {
+          this.pagination.page = 1;
+          this.get_sale_goods();
+        }, 500);
+      },
+      changeSort(column) {
+        let pagination = this.goods_param;
+        if (pagination.sortBy[0] === column) {
+          if (pagination.sortDesc[0] === true) {
+            pagination.sortBy = [];
+            pagination.sortDesc = [];
+          } else {
+            pagination.sortDesc = [true];
+          }
+        } else {
+          pagination.sortBy = [column];
+          pagination.sortDesc = [false];
+        }
+        this.$store.dispatch("sale/get_sale_goods");
+        this.goods_param.page = 1;
+        this.goods_param.sortBy = pagination.sortBy;
+        this.goods_param.sortDesc = pagination.sortDesc;
+      },
+    },
+    watch: {
+      pagination: {
+        handler() {
+          this.get_sale_goods();
+        },
+        deep: true,
       },
     },
   };
@@ -339,5 +542,8 @@
 <style scoped>
   .card {
     border-radius: 25px !important;
+  }
+  .click {
+    cursor: pointer;
   }
 </style>

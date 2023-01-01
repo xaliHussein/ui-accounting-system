@@ -16,23 +16,21 @@ export default new Vuex.Store({
     user_name: localStorage.getItem("user_name"),
     user_id: localStorage.getItem("user_id"),
     store: localStorage.getItem("store"),
-    activation: '',
+    activation: "",
     snack_message: {},
-    snack_bar: false,
-    loading_button_login: false,
-    loading_button: false,
-    table_loading: false,
-    chack_password: false,
-   
-    pageCount: 1,
     userQuery: "",
+    pageCount: 1,
     param: {
-      dropdown: true,
       sortBy: [],
       sortDesc: [],
       page: 1,
       itemsPerPage: 10,
     },
+    snack_bar: false,
+    loading_button_login: false,
+    loading_button: false,
+    table_loading: false,
+    chack_password: false,
   },
 
   mutations: {
@@ -73,7 +71,6 @@ export default new Vuex.Store({
     CHACK_USER(state, users) {
       state.activation = users.activation;
     },
-    
   },
   actions: {
     login({ commit, state }, data) {
@@ -90,7 +87,6 @@ export default new Vuex.Store({
           .then((response) => {
             const token = response.data.token;
             const data = response.data;
-            console.log(data);
             commit("LOGIN_USER", data);
             state.loading_button_login = false;
             Vue.prototype.$http.defaults.headers.common["Authorization"] =
@@ -192,6 +188,7 @@ export default new Vuex.Store({
           state.userQuery.length > 0
         )
           query = `&query=${state.userQuery}`;
+        // console.log(data)
         axios({
           url:
             `${state.server}` +
@@ -203,6 +200,7 @@ export default new Vuex.Store({
             query,
           method: "get",
         })
+          
           .then((response) => {
             state.pageCount = response.data.count;
             commit("GET_USERS", response.data.result);
@@ -237,10 +235,9 @@ export default new Vuex.Store({
           method: "put",
         })
           .then((response) => {
-            console.log(response.data.result[0])
-          commit('USER_STATUS_CHANGE',response.data.result[0])
+            commit("USER_STATUS_CHANGE", response.data.result[0]);
             state.table_loading = false;
-              let snack_message = {};
+            let snack_message = {};
             snack_message["color"] = "green darken-1";
             snack_message["icon"] = "checkbox-marked-circle";
             snack_message["text"] = "تم تغير حاله المستخدم بنجاح";
@@ -255,7 +252,7 @@ export default new Vuex.Store({
             let snack_message = {};
             snack_message["color"] = "red darken-1";
             snack_message["icon"] = "alert";
-           snack_message["text"] = "حدث مشكلة في الاتصال بالخادم";
+            snack_message["text"] = "حدث مشكلة في الاتصال بالخادم";
             commit("SNACK_MESSAGE", snack_message);
             setTimeout(() => {
               commit("TIME_OUT", snack_message);
@@ -278,7 +275,7 @@ export default new Vuex.Store({
             let snack_message = {};
             snack_message["color"] = "red darken-1";
             snack_message["icon"] = "alert";
-           snack_message["text"] = "حدث مشكلة في الاتصال بالخادم";
+            snack_message["text"] = "حدث مشكلة في الاتصال بالخادم";
             commit("SNACK_MESSAGE", snack_message);
             setTimeout(() => {
               commit("TIME_OUT", snack_message);
@@ -286,7 +283,6 @@ export default new Vuex.Store({
           });
       });
     },
-    
   },
   getters: {
     snack_bar(state) {
@@ -298,6 +294,6 @@ export default new Vuex.Store({
     sale,
     debtRecord,
     settings,
-    statisticsrs
+    statisticsrs,
   },
 });

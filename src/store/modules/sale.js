@@ -6,15 +6,18 @@ const sale = {
     sales: [],
     get_sale_id: [],
     goods: [],
+    sale_goods: [],
     cart_goods: [],
     total_price: 0,
     goods_state: "done",
     goodQuery: "",
     saleQuery: "",
     barcodeQuery: "",
+    sale_good_query: "",
     pageCount: 1,
     salePageCount: 1,
     saleIdPageCount: 1,
+    saleGoodsPageCount: 1,
     param: {
       dropdown: true,
       sortBy: [],
@@ -34,7 +37,14 @@ const sale = {
       page: 1,
       itemsPerPage: 10,
     },
+    goods_param: {
+      sortBy: [],
+      sortDesc: [],
+      page: 1,
+      itemsPerPage: 10,
+    },
     table_loading: false,
+    sale_good_loading: false,
     recovery_button: false,
     pop_loading: false,
   },
@@ -45,6 +55,12 @@ const sale = {
         state.goods.push(element);
       });
       state.goods_state = "done";
+    },
+    GET_SALE_GOODS(state, sale_goods) {
+      state.sale_goods.splice(0, state.sale_goods.length);
+      sale_goods.forEach((element) => {
+        state.sale_goods.push(element);
+      });
     },
     GOODS_DREPDWON_SUCCESS(state, goods) {
       if (goods.length == 0) {
@@ -101,11 +117,13 @@ const sale = {
       });
     },
     RETRIVE_GOODS(state, retrive_goods) {
-      let index = state.get_sale_id.findIndex((element) => element.id === retrive_goods.id);
+      let index = state.get_sale_id.findIndex(
+        (element) => element.id === retrive_goods.id
+      );
       state.get_sale_id.splice(index, 1);
       state.sales.splice(index, 1);
-      state.sales.push(retrive_goods)
-    }
+      state.sales.push(retrive_goods);
+    },
   },
   actions: {
     // احضار البضائع وعرضها في scroll
@@ -179,7 +197,7 @@ const sale = {
     // انشاء عمليه شراء
     // eslint-disable-next-line no-unused-vars
     add_sale({ commit, state, rootState }, data) {
-        state.pop_loading = true;
+      state.pop_loading = true;
       return new Promise((resolve) => {
         axios({
           url: `${rootState.server}` + "/api/add_sales",
@@ -258,13 +276,11 @@ const sale = {
           });
       });
     },
-    retrive_goods({ commit, state, rootState },data) {
+    retrive_goods({ commit, state, rootState }, data) {
       state.recovery_button = true;
       return new Promise((resolve) => {
         axios({
-          url:
-            `${rootState.server}` +
-            "/api/retrive_goods",
+          url: `${rootState.server}` + "/api/retrive_goods",
           data: data,
           headers: {
             "Content-Type": "application/json",
@@ -272,7 +288,7 @@ const sale = {
           method: "put",
         })
           .then((response) => {
-            commit("RETRIVE_GOODS",response.data.result[0])
+            commit("RETRIVE_GOODS", response.data.result[0]);
             state.recovery_button = false;
             let snack_message = {};
             snack_message["color"] = "green darken-1";
@@ -290,6 +306,49 @@ const sale = {
             snack_message["color"] = "red darken-1";
             snack_message["icon"] = "alert";
             snack_message["text"] = "حدث مشكلة في الاتصال بالخادم";
+            commit("SNACK_MESSAGE", snack_message, { root: true });
+            setTimeout(() => {
+              commit("TIME_OUT", snack_message, { root: true });
+            }, 4000);
+          });
+      });
+    },
+    get_sale_goods({ commit, state, rootState }) {
+      let data = state.goods_param;
+      state.sale_good_loading = true;
+      return new Promise((resolve) => {
+        let skip = (data.page - 1) * data.itemsPerPage;
+        let limit = data.itemsPerPage;
+        let query = "";
+        if (
+          state.sale_good_query != undefined &&
+          state.sale_good_query != null &&
+          state.sale_good_query.length > 0
+        )
+          query = `&query=${state.sale_good_query}`;
+        axios({
+          url:
+            `${rootState.server}` +
+            "/api/get_sale_goods" +
+            "?skip=" +
+            skip +
+            "&limit=" +
+            limit +
+            query,
+          method: "get",
+        })
+          .then((response) => {
+            state.saleGoodsPageCount = response.data.count;
+            commit("GET_SALE_GOODS", response.data.result);
+            state.sale_good_loading = false;
+            resolve(response);
+          })
+          .catch(() => {
+            state.sale_good_loading = false;
+            let snack_message = {};
+            snack_message["color"] = "red darken-1";
+            snack_message["icon"] = "alert";
+            snack_message["text"] = "فشلة العمليه";
             commit("SNACK_MESSAGE", snack_message, { root: true });
             setTimeout(() => {
               commit("TIME_OUT", snack_message, { root: true });

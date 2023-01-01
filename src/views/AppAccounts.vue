@@ -6,22 +6,143 @@
       <v-col cols="12">
         <v-card class="mx-auto card" width="95%">
           <v-col cols="12">
-            <Tables
+            <v-data-table
               :headers="headers"
-              :loading="table_loading"
-              :title="title"
               :items="users"
-              :item="item"
-              :search="users_Query"
-              :pageCount="pageCount"
-              :pagination="pagination"
-              button2="fa-ban"
-              @fa-ban="user_status_change"
-              @add-user="popUser = !popUser"
-              @update-item="pagination.itemsPerPage = $event"
-              @update-pag="pagination.page = $event"
-              @update-query="update_users_Query"
-              @query-change="query_change" />
+              :options.sync="pagination"
+              :page.sync="pagination.page"
+              :items-per-page="pagination.itemsPerPage"
+              :loading="table_loading || false"
+              hide-default-footer
+              loading-text="جاري التحميل يرجى الأنتظار">
+              <template v-slot:top>
+                <v-toolbar flat>
+                  <v-toolbar-title>{{ title }}</v-toolbar-title>
+                  <v-divider class="mx-4" inset vertical></v-divider>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        fab
+                        small
+                        v-on="on"
+                        icon
+                        color="blue darken-4"
+                        @click="popUser = !popUser">
+                        <font-awesome :icon="['fas', 'fa-plus']" size="2x" />
+                      </v-btn>
+                    </template>
+                    <span>اضافة مستخدمين</span>
+                  </v-tooltip>
+                  <v-spacer></v-spacer>
+                  <v-text-field
+                    v-model="users_Query"
+                    @input="query_change"
+                    append-icon="mdi-magnify"
+                    clearable
+                    color="black"
+                    label="بحث"
+                    single-line
+                    hide-details
+                    class="mr-5 font-weight-black"></v-text-field>
+                </v-toolbar>
+              </template>
+              <th
+                v-for="header in headers"
+                :key="header.text"
+                :class="[
+                  'column sortable',
+                  pagination.descending ? 'desc' : 'asc',
+                  header.value === pagination.sortBy ? 'active' : '',
+                ]"
+                @click="changeSort(header.value)">
+                <v-icon small>mdi-arrow_upward</v-icon>
+                {{ header.text }}
+              </th>
+
+              <template v-slot:item="{ item }">
+                <tr>
+                  <td class="text-center font-weight-black">{{ item.name }}</td>
+                  <td class="text-center font-weight-black">
+                    {{ item.user_name }}
+                  </td>
+                  <td
+                    class="text-center font-weight-black"
+                    v-if="item.phone_number == null">
+                    <h5 style="color: red">لايوجد</h5>
+                  </td>
+                  <td class="text-center font-weight-black" v-else>
+                    {{ item.phone_number }}
+                  </td>
+                  <td class="text-center font-weight-black">
+                    {{ item.store[0].name }}
+                  </td>
+                  <td class="text-center font-weight-black">
+                    {{ moment(item.created_at).format("YYYY-MM-DD") }}
+                  </td>
+
+                  <td class="text-center font-weight-black">
+                    <v-tooltip bottom v-if="item.activation == 0">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          fab
+                          x-small
+                          style="background-color: #b71c1c"
+                          v-bind="attrs"
+                          v-on="on"
+                          @click="user_status_change(item)">
+                          <font-awesome
+                            style="color: white"
+                            :icon="['fas', 'fa-ban']"
+                            size="2x" />
+                        </v-btn>
+                      </template>
+                      <span>حظر</span>
+                    </v-tooltip>
+                    <v-tooltip bottom v-else>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          fab
+                          x-small
+                          style="background-color: #43a047"
+                          v-bind="attrs"
+                          v-on="on"
+                          @click="user_status_change(item)">
+                          <font-awesome
+                            style="color: white"
+                            :icon="['fas', 'fa-circle-check']"
+                            size="2x" />
+                        </v-btn>
+                      </template>
+                      <span>فتح الحظر</span>
+                    </v-tooltip>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+            <div class="text-center font-weight-black pt-2 mt-3">
+              <v-row>
+                <v-col
+                  align-self="center"
+                  cols="5"
+                  sm="5"
+                  md="2"
+                  lg="2"
+                  class="mr-4">
+                  <v-select
+                    v-model="pagination.itemsPerPage"
+                    :items="item"
+                    label="Items per page"></v-select>
+                </v-col>
+                <v-col align-self="center" cols="5" sm="5" md="3" lg="3">
+                  <v-pagination
+                    v-model="pagination.page"
+                    :length="pageCount"
+                    circle
+                    color="indigo darken-4"></v-pagination>
+                </v-col>
+              </v-row>
+            </div>
           </v-col>
         </v-card>
       </v-col>
@@ -31,10 +152,9 @@
   </v-container>
 </template>
 <script>
-  import Tables from "../components/Accounts/AppTable.vue";
   import AppAddUser from "../components/Accounts/AppAddUser.vue";
   export default {
-    components: { Tables, AppAddUser },
+    components: { AppAddUser },
     data() {
       return {
         popUser: false,
@@ -79,11 +199,8 @@
           },
         ],
         item: [1, 2, 5, 10, 25, 50, 100],
-        pagination: { sortBy: [], sortDesc: [], page: 1, itemsPerPage: 10 },
+        pagination: {},
       };
-    },
-    mounted() {
-      this.$store.dispatch("get_users");
     },
     computed: {
       table_loading() {
@@ -97,10 +214,10 @@
       },
       users_params: {
         set(val) {
-          this.$store.state.params = val;
+          this.$store.state.param = val;
         },
         get() {
-          return this.$store.state.params;
+          return this.$store.state.param;
         },
       },
       users_Query: {
@@ -141,13 +258,28 @@
           this.get_users();
         }, 500);
       },
-      update_users_Query(event) {
-        this.users_Query = event;
-      },
       user_status_change(item) {
         let data = {};
         data["id"] = item.id;
         this.$store.dispatch("user_status_change", data);
+      },
+      changeSort(column) {
+        let pagination = this.users_params;
+        if (pagination.sortBy[0] === column) {
+          if (pagination.sortDesc[0] === true) {
+            pagination.sortBy = [];
+            pagination.sortDesc = [];
+          } else {
+            pagination.sortDesc = [true];
+          }
+        } else {
+          pagination.sortBy = [column];
+          pagination.sortDesc = [false];
+        }
+        this.$store.dispatch("get_users");
+        this.goods_params.page = 1;
+        this.goods_params.sortBy = pagination.sortBy;
+        this.goods_params.sortDesc = pagination.sortDesc;
       },
     },
     watch: {
@@ -160,3 +292,8 @@
     },
   };
 </script>
+<style scoped>
+  .card {
+    border-radius: 25px;
+  }
+</style>

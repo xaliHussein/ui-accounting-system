@@ -9,8 +9,8 @@
         class="white--text text-center">
         <v-card-text>
           <v-btn
-            v-for="i in accounts"
-            :key="i"
+            v-for="(i, index) in accounts"
+            :key="index"
             class="mx-1 white--text"
             icon
             :href="i.link">

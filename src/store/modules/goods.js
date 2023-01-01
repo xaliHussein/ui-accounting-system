@@ -5,7 +5,7 @@ const goods = {
     goods: [],
     edit_goods: {},
     delete_goods: '',
-    goodsQuery: "",
+    goods_Query: "",
     pageCount: 1,
     params: {
       sortBy: [],
@@ -19,15 +19,16 @@ const goods = {
   },
   mutations: {
     ADD_GOODS(state, goods) {
-      state.goods.push(goods);
+      state.goods.unshift(goods);
     },
     EDIT_GOODS(state, goods) {
       let index = state.goods.findIndex((element) => element.id === goods.id);
+      console.log(index)
       state.goods.splice(index, 1);
       state.goods.unshift(goods);
     },
-    DELETE_GOODS(state, id) {
-      let index = state.goods.findIndex((element) => element.id == id);
+    DELETE_GOODS(state, data) {
+      let index = state.goods.findIndex((element) => element.id === data.id);
       state.goods.splice(index, 1);
     },
     GET_GOODS(state, goods) {
@@ -69,7 +70,7 @@ const goods = {
             let snack_message = {};
             snack_message["color"] = "red darken-1";
             snack_message["icon"] = "alert";
-            snack_message["text"] = "حدث مشكلة في الاتصال بالخادم";
+            snack_message["text"] = "خطأ في المدخلات";
             commit("SNACK_MESSAGE", snack_message, { root: true });
             setTimeout(() => {
               commit("TIME_OUT", snack_message, { root: true });
@@ -87,11 +88,11 @@ const goods = {
         let limit = data.itemsPerPage;
         let query = "";
         if (
-          state.goodsQuery != undefined &&
-          state.goodsQuery != null &&
-          state.goodsQuery.length > 0
+          state.goods_Query != undefined &&
+          state.goods_Query != null &&
+          state.goods_Query.length > 0
         )
-          query = `&query=${state.goodsQuery}`;
+          query = `&query=${state.goods_Query}`;
         axios({
           url:
             `${rootState.server}` +
@@ -175,7 +176,7 @@ const goods = {
           method: "delete",
         })
           .then((response) => {
-            commit("DELETE_GOODS", data);
+            commit("DELETE_GOODS", response.data.result[0]);
             let snack_message = {};
             snack_message["color"] = "green darken-1";
             snack_message["icon"] = "checkbox-marked-circle";

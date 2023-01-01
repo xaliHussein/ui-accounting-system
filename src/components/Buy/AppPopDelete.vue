@@ -96,7 +96,9 @@
           this.$store.dispatch("chack_password", data).then(() => {
             let data = {};
             data["id"] = this.$store.state.goods.delete_goods;
-            this.$store.dispatch("goods/delete_goods", data);
+            this.$store.dispatch("goods/delete_goods", data).then(() => {
+              this.$store.dispatch("goods/get_goods");
+            });
             this.$emit("popDelete");
           });
         }
