@@ -230,19 +230,6 @@
       },
     },
     methods: {
-      create_goods() {
-        if (this.$refs.form.validate()) {
-          let data = {};
-          data["name"] = this.nameProducer;
-          data["quantity"] = this.quantity;
-          data["buy_price"] = this.buying;
-          data["sale_price"] = this.Sale;
-          data["company"] = this.nameCompany;
-          data["product_code"] = this.productCode;
-          this.$store.dispatch("goods/add_goods", data);
-          this.$refs.form.reset();
-        }
-      },
       get_users() {
         let pagination = this.pagination;
         let par = {
