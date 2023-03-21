@@ -12,7 +12,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     users: [],
-    server: "http://127.0.0.1:8000",
+    server: "http://45.32.112.99",
     user_name: localStorage.getItem("user_name"),
     user_id: localStorage.getItem("user_id"),
     store: localStorage.getItem("store"),
@@ -200,7 +200,6 @@ export default new Vuex.Store({
             query,
           method: "get",
         })
-          
           .then((response) => {
             state.pageCount = response.data.count;
             commit("GET_USERS", response.data.result);
