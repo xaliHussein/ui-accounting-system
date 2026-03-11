@@ -1,107 +1,152 @@
 <template>
   <v-container class="login" fluid>
-    <v-row>
-      <v-col cols="12" sm="12" md="6" lg="6" class="mx-auto">
+    <v-row class="justify-center">
+      <v-col cols="12">
         <v-form ref="form">
-          <v-card width="500" class="mx-auto pb-3 card margin">
-            <v-card-title class="justify-center">
-              <h2>تسجيل الدخول</h2>
-            </v-card-title>
-            <v-card-text>
-              <Input
-                @update-value="userName = $event"
-                :value="userName"
-                :rules="userNameRules"
-                label="اسم المستخدم"
-                icon="mdi-account-circle" />
+          <v-card class="card" width="1200">
+            <v-row class="justify-center">
+              <v-col
+                cols="12"
+                sm="12"
+                md="5"
+                lg="5"
+                class="justify-center order-lg-2 order-md-2 order-sm-2 order-2"
+              >
+                <v-card-title class="d-flex justify-center mt-6 mb-3">
+                  <h2>تسجيل الدخول</h2>
+                </v-card-title>
+                <v-card-text class="mt-2">
+                  <Input
+                    @update-value="userName = $event"
+                    :value="userName"
+                    type="text"
+                    label="البريد الألكتروني"
+                    :rules="EmailRules"
+                  />
 
-              <v-text-field
-                v-model="password"
-                class="font-weight-black"
-                :type="showPassword ? 'text' : 'password'"
-                label="كلمة المرور"
-                prepend-icon="mdi-lock"
-                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                @click:append="showPassword = !showPassword"
-                :rules="PasswordsRules" />
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                @click="login"
-                :loading="loadingButton"
-                color="#16213E"
-                block
-                elevation="4">
-                <h4 style="color: white; font-size: 17px">تسجيل</h4>
-                <template v-slot:loader>
-                  <span class="custom-loader">
-                    <v-icon color="white">mdi-cached</v-icon>
-                  </span>
-                </template>
-              </v-btn>
-            </v-card-actions>
+                  <v-text-field
+                    color="#624fc6"
+                    v-model="password"
+                    outlined
+                    rounded
+                    clearable
+                    class="font-weight-black pt-5"
+                    :type="showPassword ? 'text' : 'password'"
+                    label="كلمة المرور"
+                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="showPassword = !showPassword"
+                    :rules="PasswordsRules"
+                  />
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-btn
+                    @click="login"
+                    :loading="loadingButton"
+                    color="#624fc6"
+                    large
+                    rounded
+                    class="px-16 mx-auto"
+                    elevation="4"
+                  >
+                    <h4 style="color: white; font-size: 17px">تسجيل الدخول</h4>
+                    <template v-slot:loader>
+                      <span class="custom-loader">
+                        <v-icon color="white">mdi-cached</v-icon>
+                      </span>
+                    </template>
+                  </v-btn>
+                </v-card-actions>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="12"
+                md="7"
+                lg="7"
+                class="d-flex justify-center pa-0 ma-0 order-lg-2 order-md-2 order-sm-1 order-1"
+              >
+                <v-img class="img" src="../assets/login.jpg" height="500">
+                </v-img>
+              </v-col>
+            </v-row>
           </v-card>
         </v-form>
       </v-col>
     </v-row>
   </v-container>
 </template>
-
 <script>
-  import Input from "../components/Inputs/AppInput.vue";
-  export default {
-    components: { Input },
-    data() {
-      return {
-        userName: "",
-        password: "",
-        showPassword: false,
-        userNameRules: [
-          (value) => !!value || "هذا الحقل مطلوب",
-          (value) => value.length >= 3 || "الحد الادنى لعدد الاحرف هوه 3",
-        ],
-        PasswordsRules: [
-          (value) => !!value || "هذا الحقل مطلوب",
-          (value) => value.length >= 6 || "الحد الادنى لعدد الاحرف هوه 6",
-        ],
-      };
+import Input from "../components/layout/Input.vue";
+export default {
+  components: { Input },
+  data: () => ({
+    userName: null,
+    password: null,
+    showPassword: false,
+    EmailRules: [
+      (value) => !!value || "هذا الحقل مطلوب",
+      (value) => (value || "").length >= 5 || "الحد الادنى لعدد الاحرف هوه 5",
+    ],
+    PasswordsRules: [
+      (value) => !!value || "هذا الحقل مطلوب",
+      (value) => (value || "").length >= 6 || "الحد الادنى لعدد الاحرف هوه 6",
+    ],
+  }),
+  computed: {
+    loadingButton() {
+      return this.$store.state.loading_button_login;
     },
-    computed: {
-      loadingButton() {
-        return this.$store.state.loading_button_login;
-      },
+  },
+  methods: {
+    login() {
+      if (this.$refs.form.validate()) {
+        let data = {};
+        (data["user_name"] = this.userName),
+          (data["password"] = this.password),
+          this.$store.dispatch("login", data).then(() => {
+            this.$router.push({ name: "home" });
+            location.reload();
+          });
+      }
     },
-    methods: {
-      login() {
-        if (this.$refs.form.validate()) {
-          let data = {};
-          (data["user_name"] = this.userName),
-            (data["password"] = this.password),
-            this.$store.dispatch("login", data).then(() => {
-              this.$router.push({ name: "home" });
-              location.reload();
-            });
-        }
-      },
-      redirect() {
-        this.$router.push({ name: "register" });
-      },
+    redirect() {
+      this.$router.push({ name: "register" });
     },
-  };
+  },
+};
 </script>
 <style scoped>
-  .margin {
-    margin-top: 130px;
-  }
-  .card {
-    box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px,
-      rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px !important;
-  }
-  .link-h4 {
-    cursor: pointer;
-  }
-  .link-h4:hover {
-    text-decoration: underline;
-    color: darkblue;
-  }
+.card {
+  width: 100%;
+  margin-top: 60px !important;
+  margin: auto;
+  border-radius: 15px;
+  font-family: "Cairo", sans-serif;
+  box-shadow: 0px 0px !important;
+}
+.login {
+  /* opacity: 80%; */
+  height: 100%;
+}
+.img {
+  width: 100%;
+  border-radius: 15px;
+}
+.card-img {
+  background: rgba(255, 255, 255, 0);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8.7px);
+  -webkit-backdrop-filter: blur(8.7px);
+  /* border: 0.1px solid rgb(26, 95, 122); */
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  margin-top: 100px;
+}
+.link-h4 {
+  cursor: pointer;
+}
+.link-h4:hover {
+  text-decoration: underline;
+  color: darkblue;
+}
 </style>

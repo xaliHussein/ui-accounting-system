@@ -12,9 +12,10 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     users: [],
-    server: "http://45.32.112.99",
+    server: "http://127.0.0.1:8000",
     user_name: localStorage.getItem("user_name"),
     user_id: localStorage.getItem("user_id"),
+    user_type: localStorage.getItem("user_type"),
     store: localStorage.getItem("store"),
     activation: "",
     snack_message: {},
@@ -38,12 +39,14 @@ export default new Vuex.Store({
       state.user_name = data.result[0].user_name;
       state.activation = data.result[0].activation;
       state.name = data.result[0].store[0].name;
+      state.user_type = data.result[0].user_type;
     },
     CLEAR_USER() {
       localStorage.removeItem("token");
       localStorage.removeItem("user_name");
       localStorage.removeItem("user_id");
       localStorage.removeItem("store");
+      localStorage.removeItem("user_type");
       location.reload();
     },
     SNACK_MESSAGE(state, snack_message) {
@@ -93,6 +96,7 @@ export default new Vuex.Store({
               "Bearer " + token;
             localStorage.setItem("token", token);
             localStorage.setItem("user_name", data.result[0].user_name);
+            localStorage.setItem("user_type", data.result[0].user_type);
             localStorage.setItem("user_id", data.result[0].id);
             localStorage.setItem("store", data.result[0].store[0].name);
             resolve(response);

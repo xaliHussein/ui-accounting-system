@@ -7,6 +7,9 @@ import Axios from 'axios'
 import moment from 'moment'
 import './plugins/filter'
 import './plugins/fontAwesomeIcon'
+import "./plugins/moment";
+// import "./plugins/colors";
+import "./plugins/iconify";
 
 Vue.prototype.moment = moment
 Vue.config.productionTip = false

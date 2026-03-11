@@ -194,6 +194,7 @@
 </script>
 <style scoped>
   .card {
-    border-radius: 25px;
+    box-shadow: 0px 0px 0px 0px !important;
+    border-radius: 25px !important;
   }
 </style>

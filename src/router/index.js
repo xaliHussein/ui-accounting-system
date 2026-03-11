@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import AppLogin from "../views/AppLogin.vue";
-import Home from "../views/AppHome.vue";
+// import Home from "../views/AppHome.vue";
 import Buy from "../views/AppBuy.vue";
 import Sale from "../views/AppSale.vue";
 import SalesRecord from "../views/AppSalesRecord.vue";
@@ -21,10 +21,16 @@ const routes = [
   },
   {
     path: "/",
-    name: "name",
-    component: Home,
+    name: "statistics",
+    component: Statistics,
     beforeEnter: loggedIn,
   },
+  // {
+  //   path: "/",
+  //   name: "name",
+  //   component: Home,
+  //   beforeEnter: loggedIn,
+  // },
   {
     path: "/buy",
     name: "buy",
@@ -55,12 +61,7 @@ const routes = [
     component: Settings,
     beforeEnter: loggedIn,
   },
-  {
-    path: "/statistics",
-    name: "statistics",
-    component: Statistics,
-    beforeEnter: loggedIn,
-  },
+
   {
     path: "/accounts",
     name: "accounts",

@@ -8,7 +8,8 @@
               :headers="headers"
               :items="cart_goods"
               hide-default-footer
-              loading-text="جاري التحميل يرجى الأنتظار">
+              loading-text="جاري التحميل يرجى الأنتظار"
+            >
               <template v-slot:top>
                 <v-toolbar flat>
                   <v-toolbar-title>جدول بيع بضائع</v-toolbar-title>
@@ -23,7 +24,8 @@
                     single-line
                     hide-details
                     clearable
-                    class="mr-5 font-weight-black"></v-text-field>
+                    class="mr-5 font-weight-black"
+                  ></v-text-field>
 
                   <v-autocomplete
                     ref="goodDropdown"
@@ -39,12 +41,14 @@
                     clearable
                     :search-input.sync="goodQuery"
                     :value="goodQuery"
-                    @input="add_goods">
+                    @input="add_goods"
+                  >
                     <template v-slot:append-item>
                       <div
                         v-intersect="userInteract"
                         v-if="!($store.state.sale.goods_state == 'finished')"
-                        class="text-lg-center"></div>
+                        class="text-lg-center"
+                      ></div>
                     </template>
                   </v-autocomplete>
                 </v-toolbar>
@@ -59,7 +63,8 @@
                   <td class="text-center font-weight-bold">{{ item.name }}</td>
                   <td
                     class="text-center font-weight-bold"
-                    v-if="item.company == null">
+                    v-if="item.company == null"
+                  >
                     <h5 style="color: red">لايوجد</h5>
                   </td>
                   <td class="text-center font-weight-bold" v-else>
@@ -135,7 +140,8 @@
               :items-per-page="pagination.itemsPerPage"
               :loading="sale_good_loading || false"
               hide-default-footer
-              loading-text="جاري التحميل يرجى الأنتظار">
+              loading-text="جاري التحميل يرجى الأنتظار"
+            >
               <template v-slot:top>
                 <v-toolbar flat>
                   <v-toolbar-title>جدول بضائع</v-toolbar-title>
@@ -151,7 +157,8 @@
                     color="black"
                     clearable
                     hide-details
-                    class="mr-5 font-weight-black"></v-text-field>
+                    class="mr-5 font-weight-black"
+                  ></v-text-field>
                 </v-toolbar>
               </template>
               <th v-for="header in headers" :key="header.text">
@@ -190,18 +197,21 @@
                   sm="5"
                   md="2"
                   lg="2"
-                  class="mr-4">
+                  class="mr-4"
+                >
                   <v-select
                     v-model="pagination.itemsPerPage"
                     :items="items"
-                    label="Items per page"></v-select>
+                    label="Items per page"
+                  ></v-select>
                 </v-col>
                 <v-col align-self="center" cols="5" sm="5" md="3" lg="3">
                   <v-pagination
                     v-model="pagination.page"
                     :length="pageCount"
                     circle
-                    color="indigo darken-4">
+                    color="indigo darken-4"
+                  >
                   </v-pagination>
                 </v-col>
               </v-row>
@@ -213,337 +223,338 @@
   </v-container>
 </template>
 <script>
-  import AppPopMonetary from "../components/Sale/AppPopMonetary.vue";
-  export default {
-    components: { AppPopMonetary },
-    data() {
-      return {
-        id: "",
-        items: [5, 10, 25, 50, 100],
-        pagination: {},
-        dialog: false,
-        menu_props: {
-          closeOnClick: false,
-          closeOnContentClick: false,
-          disableKeys: true,
-          openOnClick: false,
-          maxHeight: 300,
-          offsetY: true,
-          offsetOverflow: true,
-          transition: false,
+import AppPopMonetary from "../components/Sale/AppPopMonetary.vue";
+export default {
+  components: { AppPopMonetary },
+  data() {
+    return {
+      id: "",
+      items: [5, 10, 25, 50, 100],
+      pagination: {},
+      dialog: false,
+      menu_props: {
+        closeOnClick: false,
+        closeOnContentClick: false,
+        disableKeys: true,
+        openOnClick: false,
+        maxHeight: 300,
+        offsetY: true,
+        offsetOverflow: true,
+        transition: false,
+      },
+      headers: [
+        {
+          text: "اسم المنتج",
+          align: "center",
+          filterable: true,
+          class: "indigo darken-4 white--text title ",
         },
-        headers: [
-          {
-            text: "اسم المنتج",
-            align: "center",
-            filterable: true,
-            class: "indigo darken-4 white--text title ",
-          },
-          {
-            text: "اسم الشركة",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "سعر",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "الكميه",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "الكميه المتاحه",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "اجرائات",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-        ],
-        headers2: [
-          {
-            text: "اسم المنتج",
-            align: "center",
-            filterable: true,
-            value: "name",
-            class: "indigo darken-4 white--text title ",
-          },
-          {
-            text: "اسم الشركة",
-            value: "company",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "سعر",
-            value: "buy_price",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "الكميه",
-            value: "buy_price",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
+        {
+          text: "اسم الشركة",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "سعر",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "الكميه",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "الكميه المتاحه",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "اجرائات",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+      ],
+      headers2: [
+        {
+          text: "اسم المنتج",
+          align: "center",
+          filterable: true,
+          value: "name",
+          class: "indigo darken-4 white--text title ",
+        },
+        {
+          text: "اسم الشركة",
+          value: "company",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "سعر",
+          value: "buy_price",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "الكميه",
+          value: "buy_price",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
 
-          {
-            text: "رقم المنتج",
-            value: "product_code",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "تاريخ شراء",
-            value: "data",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-        ],
-      };
+        {
+          text: "رقم المنتج",
+          value: "product_code",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "تاريخ شراء",
+          value: "data",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+      ],
+    };
+  },
+  mounted() {
+    this.$store.dispatch("sale/get_goods");
+  },
+  computed: {
+    goods() {
+      return this.$store.state.sale.goods;
     },
-    mounted() {
+    cart_goods() {
+      return this.$store.state.sale.cart_goods;
+    },
+    goodQuery: {
+      set(val) {
+        this.$store.state.sale.goodQuery = val;
+      },
+      get() {
+        return this.$store.state.sale.goodQuery;
+      },
+    },
+    search_barcode: {
+      set(val) {
+        this.$store.state.sale.barcodeQuery = val;
+      },
+      get() {
+        return this.$store.state.sale.barcodeQuery;
+      },
+    },
+    total_price() {
+      return this.$store.state.sale.total_price;
+    },
+    // computed الخاص ب جدول البضائع لاختيار منها لبيع
+    sale_good_query: {
+      set(val) {
+        this.$store.state.sale.sale_good_query = val;
+      },
+      get() {
+        return this.$store.state.sale.sale_good_query;
+      },
+    },
+    goods2() {
+      return this.$store.state.sale.sale_goods;
+    },
+    pageCount() {
+      return this.$store.state.sale.saleGoodsPageCount;
+    },
+    goods_param: {
+      set(val) {
+        this.$store.state.sale.goods_param = val;
+      },
+      get() {
+        return this.$store.state.sale.goods_param;
+      },
+    },
+    sale_good_loading() {
+      return this.$store.state.sale.sale_good_loading;
+    },
+    // end
+  },
+  methods: {
+    pop() {
+      if (this.$store.state.sale.cart_goods.length > 0) {
+        this.dialog = !this.dialog;
+      } else {
+        let snack_message = {};
+        snack_message["color"] = "orange darken-1";
+        snack_message["icon"] = "alert";
+        snack_message["text"] = "لم تقم باضافة مواد";
+        this.$store.commit("SNACK_MESSAGE", snack_message);
+        setTimeout(() => {
+          this.$store.commit("TIME_OUT", snack_message);
+        }, 4000);
+      }
+    },
+    get_goods() {
+      if (this.$store.state.sale.goods_state == "finished") return;
       this.$store.dispatch("sale/get_goods");
     },
-    computed: {
-      goods() {
-        return this.$store.state.sale.goods;
-      },
-      cart_goods() {
-        return this.$store.state.sale.cart_goods;
-      },
-      goodQuery: {
-        set(val) {
-          this.$store.state.sale.goodQuery = val;
-        },
-        get() {
-          return this.$store.state.sale.goodQuery;
-        },
-      },
-      search_barcode: {
-        set(val) {
-          this.$store.state.sale.barcodeQuery = val;
-        },
-        get() {
-          return this.$store.state.sale.barcodeQuery;
-        },
-      },
-      total_price() {
-        return this.$store.state.sale.total_price;
-      },
-      // computed الخاص ب جدول البضائع لاختيار منها لبيع
-      sale_good_query: {
-        set(val) {
-          this.$store.state.sale.sale_good_query = val;
-        },
-        get() {
-          return this.$store.state.sale.sale_good_query;
-        },
-      },
-      goods2() {
-        return this.$store.state.sale.sale_goods;
-      },
-      pageCount() {
-        return this.$store.state.sale.saleGoodsPageCount;
-      },
-      goods_param: {
-        set(val) {
-          this.$store.state.sale.goods_param = val;
-        },
-        get() {
-          return this.$store.state.sale.goods_param;
-        },
-      },
-      sale_good_loading() {
-        return this.$store.state.sale.sale_good_loading;
-      },
-      // end
-    },
-    methods: {
-      pop() {
-        if (this.$store.state.sale.cart_goods.length > 0) {
-          this.dialog = !this.dialog;
-        } else {
-          let snack_message = {};
-          snack_message["color"] = "orange darken-1";
-          snack_message["icon"] = "alert";
-          snack_message["text"] = "لم تقم باضافة مواد";
-          this.$store.commit("SNACK_MESSAGE", snack_message);
-          setTimeout(() => {
-            this.$store.commit("TIME_OUT", snack_message);
-          }, 4000);
-        }
-      },
-      get_goods() {
-        if (this.$store.state.sale.goods_state == "finished") return;
-        this.$store.dispatch("sale/get_goods");
-      },
-      userInteract(entries, observer, isIntersecting) {
-        if (isIntersecting) {
-          setTimeout(() => {
-            this.get_goods(); // onscroll
-            this.$refs.goodDropdown.onScroll();
-          }, 500);
-        }
-      },
-      // احضار البضائع من خلال الباركود
-      barcode() {
-        clearTimeout(this._timerId);
-        this._timerId = setTimeout(() => {
-          this.$store.dispatch("sale/get_goods_barcode").then(() => {
-            this.$refs.barcode.reset();
-          });
+    userInteract(entries, observer, isIntersecting) {
+      if (isIntersecting) {
+        setTimeout(() => {
+          this.get_goods(); // onscroll
+          this.$refs.goodDropdown.onScroll();
         }, 500);
-      },
-      // حذف عنصر من جدول
-      delete_item(item) {
+      }
+    },
+    // احضار البضائع من خلال الباركود
+    barcode() {
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(() => {
+        this.$store.dispatch("sale/get_goods_barcode").then(() => {
+          this.$refs.barcode.reset();
+        });
+      }, 500);
+    },
+    // حذف عنصر من جدول
+    delete_item(item) {
+      let index = this.$store.state.sale.cart_goods.findIndex((element) => {
+        // يبحث عن المنتج المراد حذفه من الجدول يطابق ال id و الكميه
+        if (element.id == item.id && element.quantity == item.quantity) {
+          return element.id == item.id;
+        }
+      });
+      this.$store.state.sale.total_price -= item.sale_price * item.quantity;
+      this.$store.state.sale.cart_goods.splice(index, 1);
+    },
+    // اضفة في عدد كميه منتج
+    plus(item) {
+      if (item.availableQuantity != 0) {
         let index = this.$store.state.sale.cart_goods.findIndex((element) => {
-          // يبحث عن المنتج المراد حذفه من الجدول يطابق ال id و الكميه
           if (element.id == item.id && element.quantity == item.quantity) {
             return element.id == item.id;
           }
         });
-        this.$store.state.sale.total_price -= item.sale_price * item.quantity;
-        this.$store.state.sale.cart_goods.splice(index, 1);
-      },
-      // اضفة في عدد كميه منتج
-      plus(item) {
-        if (item.availableQuantity != 0) {
-          let index = this.$store.state.sale.cart_goods.findIndex((element) => {
-            if (element.id == item.id && element.quantity == item.quantity) {
-              return element.id == item.id;
-            }
-          });
-          item.quantity += 1;
-          item.availableQuantity -= 1;
-          this.$store.state.sale.total_price += item.sale_price;
-          this.$store.state.sale.cart_goods.splice(index, 1, item);
-        } else {
-          let snack_message = {};
-          snack_message["color"] = "orange darken-1";
-          snack_message["icon"] = "alert";
-          snack_message["text"] = "نفذت الكميه";
-          this.$store.commit("SNACK_MESSAGE", snack_message);
-          setTimeout(() => {
-            this.$store.commit("TIME_OUT", snack_message);
-          }, 4000);
-        }
-      },
-      // نقصان في عدد كميه منتج
-      minus(item) {
-        if (item.quantity > 1) {
-          let index = this.$store.state.sale.cart_goods.findIndex((element) => {
-            if (element.id == item.id && element.quantity == item.quantity) {
-              return element.id == item.id;
-            }
-          });
-          item.quantity -= 1;
-          item.availableQuantity += 1;
-          this.$store.state.sale.total_price -= item.sale_price;
-          this.$store.state.sale.cart_goods.splice(index, 1, item);
-        }
-      },
-      // احضار البضائع من خلال الاسم
-      add_goods(id) {
-        let chack_goods = false;
-        // هذا الشرط لتاكد من ادخال بضاعه في بوكس البحث
-        if (id != null) {
-          let product = this.$store.state.sale.goods.find((element) => {
-            return element.id == id;
-          });
-          this.$store.state.sale.cart_goods.forEach((e) => {
-            if (e.id == product.id) {
-              chack_goods = true;
-            }
-          });
-          // هذا الشرط يعمل على ان لا يتم اضافة نفس المنتج مرتين
-          if (chack_goods == false) {
-            // هذا الشرط يمنع اضافة بضاعه انتهت كميتها
-            if (product.quantity != 0) {
-              let ProductData = {};
-              ProductData["id"] = product.id;
-              ProductData["quantity"] = 1;
-              ProductData["name"] = product.name;
-              ProductData["company"] = product.company;
-              ProductData["sale_price"] = product.sale_price;
-              ProductData["availableQuantity"] = product.quantity - 1;
+        item.quantity += 1;
+        item.availableQuantity -= 1;
+        this.$store.state.sale.total_price += item.sale_price;
+        this.$store.state.sale.cart_goods.splice(index, 1, item);
+      } else {
+        let snack_message = {};
+        snack_message["color"] = "orange darken-1";
+        snack_message["icon"] = "alert";
+        snack_message["text"] = "نفذت الكميه";
+        this.$store.commit("SNACK_MESSAGE", snack_message);
+        setTimeout(() => {
+          this.$store.commit("TIME_OUT", snack_message);
+        }, 4000);
+      }
+    },
+    // نقصان في عدد كميه منتج
+    minus(item) {
+      if (item.quantity > 1) {
+        let index = this.$store.state.sale.cart_goods.findIndex((element) => {
+          if (element.id == item.id && element.quantity == item.quantity) {
+            return element.id == item.id;
+          }
+        });
+        item.quantity -= 1;
+        item.availableQuantity += 1;
+        this.$store.state.sale.total_price -= item.sale_price;
+        this.$store.state.sale.cart_goods.splice(index, 1, item);
+      }
+    },
+    // احضار البضائع من خلال الاسم
+    add_goods(id) {
+      let chack_goods = false;
+      // هذا الشرط لتاكد من ادخال بضاعه في بوكس البحث
+      if (id != null) {
+        let product = this.$store.state.sale.goods.find((element) => {
+          return element.id == id;
+        });
+        this.$store.state.sale.cart_goods.forEach((e) => {
+          if (e.id == product.id) {
+            chack_goods = true;
+          }
+        });
+        // هذا الشرط يعمل على ان لا يتم اضافة نفس المنتج مرتين
+        if (chack_goods == false) {
+          // هذا الشرط يمنع اضافة بضاعه انتهت كميتها
+          if (product.quantity != 0) {
+            let ProductData = {};
+            ProductData["id"] = product.id;
+            ProductData["quantity"] = 1;
+            ProductData["name"] = product.name;
+            ProductData["company"] = product.company;
+            ProductData["sale_price"] = product.sale_price;
+            ProductData["availableQuantity"] = product.quantity - 1;
 
-              this.$store.state.sale.total_price += product.sale_price;
-              this.$store.state.sale.cart_goods.push(ProductData);
-              setTimeout(() => {
-                this.$refs.goodDropdown.reset();
-              }, 500);
-            } else {
-              // عرض اشعار بان البضاعه انتهت كمياتها
-              let snack_message = {};
-              snack_message["color"] = "orange darken-1";
-              snack_message["icon"] = "alert";
-              snack_message["text"] = "نفذت الكميه";
-              this.$store.commit("SNACK_MESSAGE", snack_message);
-              setTimeout(() => {
-                this.$store.commit("TIME_OUT", snack_message);
-              }, 4000);
-            }
+            this.$store.state.sale.total_price += product.sale_price;
+            this.$store.state.sale.cart_goods.push(ProductData);
+            setTimeout(() => {
+              this.$refs.goodDropdown.reset();
+            }, 500);
           } else {
-            this.$refs.goodDropdown.reset();
-          }
-        }
-      },
-      // methode الخاص ب جدول بضائع لاختيار منها لبيع
-      get_sale_goods() {
-        let pagination = this.pagination;
-        let par = {
-          ...pagination,
-        };
-        this.goods_param = par;
-        this.$store.dispatch("sale/get_sale_goods");
-      },
-      queryChange() {
-        clearTimeout(this._timerId);
-        this._timerId = setTimeout(() => {
-          this.pagination.page = 1;
-          this.get_sale_goods();
-        }, 500);
-      },
-      changeSort(column) {
-        let pagination = this.goods_param;
-        if (pagination.sortBy[0] === column) {
-          if (pagination.sortDesc[0] === true) {
-            pagination.sortBy = [];
-            pagination.sortDesc = [];
-          } else {
-            pagination.sortDesc = [true];
+            // عرض اشعار بان البضاعه انتهت كمياتها
+            let snack_message = {};
+            snack_message["color"] = "orange darken-1";
+            snack_message["icon"] = "alert";
+            snack_message["text"] = "نفذت الكميه";
+            this.$store.commit("SNACK_MESSAGE", snack_message);
+            setTimeout(() => {
+              this.$store.commit("TIME_OUT", snack_message);
+            }, 4000);
           }
         } else {
-          pagination.sortBy = [column];
-          pagination.sortDesc = [false];
+          this.$refs.goodDropdown.reset();
         }
-        this.$store.dispatch("sale/get_sale_goods");
-        this.goods_param.page = 1;
-        this.goods_param.sortBy = pagination.sortBy;
-        this.goods_param.sortDesc = pagination.sortDesc;
-      },
+      }
     },
-    watch: {
-      pagination: {
-        handler() {
-          this.get_sale_goods();
-        },
-        deep: true,
-      },
+    // methode الخاص ب جدول بضائع لاختيار منها لبيع
+    get_sale_goods() {
+      let pagination = this.pagination;
+      let par = {
+        ...pagination,
+      };
+      this.goods_param = par;
+      this.$store.dispatch("sale/get_sale_goods");
     },
-  };
+    queryChange() {
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(() => {
+        this.pagination.page = 1;
+        this.get_sale_goods();
+      }, 500);
+    },
+    changeSort(column) {
+      let pagination = this.goods_param;
+      if (pagination.sortBy[0] === column) {
+        if (pagination.sortDesc[0] === true) {
+          pagination.sortBy = [];
+          pagination.sortDesc = [];
+        } else {
+          pagination.sortDesc = [true];
+        }
+      } else {
+        pagination.sortBy = [column];
+        pagination.sortDesc = [false];
+      }
+      this.$store.dispatch("sale/get_sale_goods");
+      this.goods_param.page = 1;
+      this.goods_param.sortBy = pagination.sortBy;
+      this.goods_param.sortDesc = pagination.sortDesc;
+    },
+  },
+  watch: {
+    pagination: {
+      handler() {
+        this.get_sale_goods();
+      },
+      deep: true,
+    },
+  },
+};
 </script>
 <style scoped>
-  .card {
-    border-radius: 25px !important;
-  }
-  .click {
-    cursor: pointer;
-  }
+.card {
+  box-shadow: 0px 0px 0px 0px !important;
+  border-radius: 25px !important;
+}
+.click {
+  cursor: pointer;
+}
 </style>

@@ -1,20 +1,20 @@
 <template>
   <v-app id="app">
     <v-main class="font">
-      <AppHeader v-if="loggedIn" />
+      <SideBar v-if="loggedIn" />
       <AppSnackBar v-if="snackBar" :snack_message="snack_message" />
       <router-view />
     </v-main>
-    <AppFooter />
+    <!-- <AppFooter /> -->
   </v-app>
 </template>
 
 <script>
-  import AppHeader from "./components/AppHeader.vue";
+  import SideBar from "./components/layout/SideBar.vue";
   import AppSnackBar from "./components/AppSnackBar.vue";
-  import AppFooter from "./components/AppFooter.vue";
+  // import AppFooter from "./components/AppFooter.vue";
   export default {
-    components: { AppHeader, AppSnackBar, AppFooter },
+    components: { SideBar, AppSnackBar },
     name: "App",
 
     data: () => ({
@@ -35,7 +35,7 @@
 </script>
 <style>
   .font {
-    background-color: #0f3460;
+    background-color: #e0e4e4;
   }
   #app {
     font-family: "Cairo", sans-serif;

@@ -14,7 +14,8 @@
               :items-per-page="pagination.itemsPerPage"
               :loading="table_loading || false"
               hide-default-footer
-              loading-text="جاري التحميل يرجى الأنتظار">
+              loading-text="جاري التحميل يرجى الأنتظار"
+            >
               <template v-slot:top>
                 <v-toolbar flat>
                   <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -28,7 +29,8 @@
                         v-on="on"
                         icon
                         color="blue darken-4"
-                        @click="popUser = !popUser">
+                        @click="popUser = !popUser"
+                      >
                         <font-awesome :icon="['fas', 'fa-plus']" size="2x" />
                       </v-btn>
                     </template>
@@ -44,7 +46,8 @@
                     label="بحث"
                     single-line
                     hide-details
-                    class="mr-5 font-weight-black"></v-text-field>
+                    class="mr-5 font-weight-black"
+                  ></v-text-field>
                 </v-toolbar>
               </template>
               <th
@@ -55,7 +58,8 @@
                   pagination.descending ? 'desc' : 'asc',
                   header.value === pagination.sortBy ? 'active' : '',
                 ]"
-                @click="changeSort(header.value)">
+                @click="changeSort(header.value)"
+              >
                 <v-icon small>mdi-arrow_upward</v-icon>
                 {{ header.text }}
               </th>
@@ -68,7 +72,8 @@
                   </td>
                   <td
                     class="text-center font-weight-black"
-                    v-if="item.phone_number == null">
+                    v-if="item.phone_number == null"
+                  >
                     <h5 style="color: red">لايوجد</h5>
                   </td>
                   <td class="text-center font-weight-black" v-else>
@@ -90,11 +95,13 @@
                           style="background-color: #b71c1c"
                           v-bind="attrs"
                           v-on="on"
-                          @click="user_status_change(item)">
+                          @click="user_status_change(item)"
+                        >
                           <font-awesome
                             style="color: white"
                             :icon="['fas', 'fa-ban']"
-                            size="2x" />
+                            size="2x"
+                          />
                         </v-btn>
                       </template>
                       <span>حظر</span>
@@ -107,11 +114,13 @@
                           style="background-color: #43a047"
                           v-bind="attrs"
                           v-on="on"
-                          @click="user_status_change(item)">
+                          @click="user_status_change(item)"
+                        >
                           <font-awesome
                             style="color: white"
                             :icon="['fas', 'fa-circle-check']"
-                            size="2x" />
+                            size="2x"
+                          />
                         </v-btn>
                       </template>
                       <span>فتح الحظر</span>
@@ -128,18 +137,21 @@
                   sm="5"
                   md="2"
                   lg="2"
-                  class="mr-4">
+                  class="mr-4"
+                >
                   <v-select
                     v-model="pagination.itemsPerPage"
                     :items="item"
-                    label="Items per page"></v-select>
+                    label="Items per page"
+                  ></v-select>
                 </v-col>
                 <v-col align-self="center" cols="5" sm="5" md="3" lg="3">
                   <v-pagination
                     v-model="pagination.page"
                     :length="pageCount"
                     circle
-                    color="indigo darken-4"></v-pagination>
+                    color="indigo darken-4"
+                  ></v-pagination>
                 </v-col>
               </v-row>
             </div>
@@ -152,135 +164,136 @@
   </v-container>
 </template>
 <script>
-  import AppAddUser from "../components/Accounts/AppAddUser.vue";
-  export default {
-    components: { AppAddUser },
-    data() {
-      return {
-        popUser: false,
-        title: "جدول ادارة الحسابات",
-        headers: [
-          {
-            text: "اسم العميل",
-            align: "center",
-            filterable: true,
-            value: "name",
-            class: "indigo darken-4 white--text title ",
-          },
-          {
-            text: "اسم المستخدم",
-            value: "company",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "رقم الهاتف",
-            value: "buy_price",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "اسم المتجر",
-            value: "buy_price",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "تاريخ انشاء الحساب",
-            value: "created_at",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-          {
-            text: "اجرائات",
-            value: "procedures",
-            align: "center",
-            class: "indigo darken-4 white--text title",
-          },
-        ],
-        item: [1, 2, 5, 10, 25, 50, 100],
-        pagination: {},
+import AppAddUser from "../components/Accounts/AppAddUser.vue";
+export default {
+  components: { AppAddUser },
+  data() {
+    return {
+      popUser: false,
+      title: "جدول ادارة الحسابات",
+      headers: [
+        {
+          text: "اسم العميل",
+          align: "center",
+          filterable: true,
+          value: "name",
+          class: "indigo darken-4 white--text title ",
+        },
+        {
+          text: "اسم المستخدم",
+          value: "company",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "رقم الهاتف",
+          value: "buy_price",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "اسم المتجر",
+          value: "buy_price",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "تاريخ انشاء الحساب",
+          value: "created_at",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+        {
+          text: "اجرائات",
+          value: "procedures",
+          align: "center",
+          class: "indigo darken-4 white--text title",
+        },
+      ],
+      item: [1, 2, 5, 10, 25, 50, 100],
+      pagination: {},
+    };
+  },
+  computed: {
+    table_loading() {
+      return this.$store.state.table_loading;
+    },
+    users() {
+      return this.$store.state.users;
+    },
+    pageCount() {
+      return this.$store.state.pageCount;
+    },
+    users_params: {
+      set(val) {
+        this.$store.state.param = val;
+      },
+      get() {
+        return this.$store.state.param;
+      },
+    },
+    users_Query: {
+      set(val) {
+        this.$store.state.userQuery = val;
+      },
+      get() {
+        return this.$store.state.userQuery;
+      },
+    },
+  },
+  methods: {
+    get_users() {
+      let pagination = this.pagination;
+      let par = {
+        ...pagination,
       };
+      this.users_params = par;
+      this.$store.dispatch("get_users");
     },
-    computed: {
-      table_loading() {
-        return this.$store.state.table_loading;
-      },
-      users() {
-        return this.$store.state.users;
-      },
-      pageCount() {
-        return this.$store.state.pageCount;
-      },
-      users_params: {
-        set(val) {
-          this.$store.state.param = val;
-        },
-        get() {
-          return this.$store.state.param;
-        },
-      },
-      users_Query: {
-        set(val) {
-          this.$store.state.userQuery = val;
-        },
-        get() {
-          return this.$store.state.userQuery;
-        },
-      },
+    query_change() {
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(() => {
+        this.pagination.page = 1;
+        this.get_users();
+      }, 500);
     },
-    methods: {
-      get_users() {
-        let pagination = this.pagination;
-        let par = {
-          ...pagination,
-        };
-        this.users_params = par;
-        this.$store.dispatch("get_users");
-      },
-      query_change() {
-        clearTimeout(this._timerId);
-        this._timerId = setTimeout(() => {
-          this.pagination.page = 1;
-          this.get_users();
-        }, 500);
-      },
-      user_status_change(item) {
-        let data = {};
-        data["id"] = item.id;
-        this.$store.dispatch("user_status_change", data);
-      },
-      changeSort(column) {
-        let pagination = this.users_params;
-        if (pagination.sortBy[0] === column) {
-          if (pagination.sortDesc[0] === true) {
-            pagination.sortBy = [];
-            pagination.sortDesc = [];
-          } else {
-            pagination.sortDesc = [true];
-          }
+    user_status_change(item) {
+      let data = {};
+      data["id"] = item.id;
+      this.$store.dispatch("user_status_change", data);
+    },
+    changeSort(column) {
+      let pagination = this.users_params;
+      if (pagination.sortBy[0] === column) {
+        if (pagination.sortDesc[0] === true) {
+          pagination.sortBy = [];
+          pagination.sortDesc = [];
         } else {
-          pagination.sortBy = [column];
-          pagination.sortDesc = [false];
+          pagination.sortDesc = [true];
         }
-        this.$store.dispatch("get_users");
-        this.goods_params.page = 1;
-        this.goods_params.sortBy = pagination.sortBy;
-        this.goods_params.sortDesc = pagination.sortDesc;
-      },
+      } else {
+        pagination.sortBy = [column];
+        pagination.sortDesc = [false];
+      }
+      this.$store.dispatch("get_users");
+      this.goods_params.page = 1;
+      this.goods_params.sortBy = pagination.sortBy;
+      this.goods_params.sortDesc = pagination.sortDesc;
     },
-    watch: {
-      pagination: {
-        handler() {
-          this.get_users();
-        },
-        deep: true,
+  },
+  watch: {
+    pagination: {
+      handler() {
+        this.get_users();
       },
+      deep: true,
     },
-  };
+  },
+};
 </script>
 <style scoped>
-  .card {
-    border-radius: 25px;
-  }
+.card {
+  box-shadow: 0px 0px 0px 0px !important;
+  border-radius: 25px !important;
+}
 </style>
